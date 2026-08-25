@@ -7,7 +7,7 @@
 // Al publicar una versión nueva, sube CACHE_VERSION para invalidar el cache viejo.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CACHE_VERSION = "bapyc-v1";
+const CACHE_VERSION = "bapyc-v2";
 const SHELL = [
   "./",
   "./index.html",
@@ -62,19 +62,20 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // App shell: cache-first, con fallback a red (y refresco del cache).
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req)
+  // App shell (mismo origen): NETWORK-FIRST → siempre la versión más reciente en
+  // línea; el cache solo es respaldo cuando no hay internet. Así las actualizaciones
+  // (deploys) llegan de inmediato y la app sigue funcionando offline.
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      fetch(req)
         .then((res) => {
-          if (res.ok && url.origin === self.location.origin) {
+          if (res.ok) {
             const copy = res.clone();
             caches.open(CACHE_VERSION).then((cache) => cache.put(req, copy));
           }
           return res;
         })
-        .catch(() => cached);
-    }),
-  );
+        .catch(() => caches.match(req)),
+    );
+  }
 });

@@ -19,6 +19,15 @@ export async function loadBank(url = BANK_URL) {
   if (!res.ok) throw new Error(`No se pudo cargar el banco (${res.status})`);
   const root = await res.json();
 
+  const mkQuestions = (arr) =>
+    (arr ?? []).map((q) => ({
+      id: q.id,
+      text: q.text,
+      expl: q.help?.expl ?? "",
+      examples: q.help?.ex ?? [],
+      strategy: q.strategy ?? "",
+    }));
+
   const families = (root.families ?? []).map((f) => ({
     id: f.id,
     key: f.key,
@@ -27,13 +36,7 @@ export async function loadBank(url = BANK_URL) {
     sub: f.sub ?? "",
     evidenceChips: f.evidenceChips ?? [],
     routes: f.routes ?? [],
-    questions: (f.questions ?? []).map((q) => ({
-      id: q.id,
-      text: q.text,
-      expl: q.help?.expl ?? "",
-      examples: q.help?.ex ?? [],
-      strategy: q.strategy ?? "",
-    })),
+    questions: mkQuestions(f.questions),
   }));
 
   const scopes = (root.scopes ?? []).map((s) => ({
@@ -54,12 +57,16 @@ export async function loadBank(url = BANK_URL) {
 
   const conditions = (root.conditions ?? []).map((c) => {
     const fams = c.fams ?? [];
+    // questions: familyKey -> [preguntas propias de la condición]
+    const questions = {};
+    if (c.questions) for (const k of Object.keys(c.questions)) questions[k] = mkQuestions(c.questions[k]);
     return {
       id: c.id,
       name: c.name,
       fams,
       ex: c.ex ?? {},         // familyKey -> [ejemplos]
       routes: c.routes ?? {}, // familyKey -> [rutas]
+      questions,              // familyKey -> [preguntas]
       // Solo adapta si tiene familias sugeridas ("Otra"/"No estoy seguro" no adaptan).
       adapts: fams.length > 0,
     };
@@ -93,6 +100,16 @@ export async function loadBank(url = BANK_URL) {
     context(id) { return contexts.find((c) => c.id === id) ?? null; },
     scope(id)   { return scopes.find((s) => s.id === id) ?? null; },
     condition(id) { return id ? (conditions.find((c) => c.id === id) ?? null) : null; },
+
+    /** Preguntas de la baraja para una familia: las de la condición si existen, si no las genéricas. */
+    deckQuestions(familyKey, condId) {
+      const cond = this.condition(condId);
+      const adapts = cond && cond.fams.length > 0;
+      const condQ = adapts ? cond.questions?.[familyKey] : null;
+      if (condQ && condQ.length) return condQ;
+      const fam = this.family(familyKey);
+      return fam ? fam.questions : [];
+    },
   };
 }
 
@@ -184,11 +201,12 @@ export function evaluate({
       const red = bank.rules.familyRedHigh && semaphores[familyId] === "red";
       const high = systemic || red || items.length >= bank.rules.yesAtLeastHigh;
       const fam = bank.family(familyId);
+      const deckQs = bank.deckQuestions(familyId, scopeCond);
 
       const seenBarrier = new Set();
       const barrierItems = items
         .map((ans) => {
-          const q = fam?.questions.find((qq) => qq.id === ans.questionId);
+          const q = deckQs.find((qq) => qq.id === ans.questionId);
           return {
             barrier: q?.text ?? ans.questionId,
             strategy: q?.strategy ?? "",

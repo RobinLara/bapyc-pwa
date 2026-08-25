@@ -57,7 +57,7 @@ function buildViewModels(bank) {
   FAM_BY_KEY = Object.fromEntries(FAMS.map((f) => [f.key, f]));
   CTX = bank.contexts.map((c) => ({ id: c.id, name: c.name, tag: c.tag, desc: c.desc }));
   SCOPES = bank.scopes.map((s) => ({ ...s, iconName: SCOPE_IC[s.id] || "person" }));
-  CONDITIONS = bank.conditions.map((c) => ({ id: c.id, name: c.name, fams: c.fams, ex: c.ex, routes: c.routes, adapts: c.adapts }));
+  CONDITIONS = bank.conditions.map((c) => ({ id: c.id, name: c.name, fams: c.fams, ex: c.ex, routes: c.routes, questions: c.questions, adapts: c.adapts }));
 }
 
 // ── Estado ───────────────────────────────────────────────────────────────────
@@ -246,28 +246,31 @@ function setupSemaforo() {
 
 // ── Swipe / Deck (VIEW 2) ────────────────────────────────────────────────────
 const orderFams = () => state.order.map((k) => FAM_BY_KEY[k]).filter(Boolean);
-const totalCards = () => orderFams().reduce((a, f) => a + f.questions.length, 0);
-const doneCards = () => { const of = orderFams(); let n = 0; for (let i = 0; i < state.di; i++) n += of[i].questions.length; return n + state.qi; };
+// Preguntas de la baraja para una familia: propias de la condición si existen, si no las genéricas.
+const deckQs = (fam) => (fam ? BANK.deckQuestions(fam.key, state.scope.cond) : []);
+const totalCards = () => orderFams().reduce((a, f) => a + deckQs(f).length, 0);
+const doneCards = () => { const of = orderFams(); let n = 0; for (let i = 0; i < state.di; i++) n += deckQs(of[i]).length; return n + state.qi; };
 
 function renderDeck() {
   const of = orderFams();
   const fam = of[state.di];
   if (!fam) { buildEvidence(); go("evidencia"); return; }
+  const qs = deckQs(fam);
   const deck = $("deck");
   $("swKicker").textContent = `Paso 2 de 4 · Familia ${state.di + 1} de ${of.length}`;
   $("deckFam").innerHTML = `<span class="d" style="background:${cvar(fam.bg)};color:${cvar(fam.color)}">${fam.icon}</span>Barreras ${esc(fam.name.toLowerCase())}`;
-  $("deckCount").textContent = `${state.qi + 1}/${fam.questions.length}`;
+  $("deckCount").textContent = `${state.qi + 1}/${qs.length}`;
   $("swBar").style.width = (doneCards() / totalCards() * 100) + "%";
   const pv = $("prevCardBtn"); if (pv) pv.style.display = (state.di > 0 || state.qi > 0) ? "flex" : "none";
   deck.innerHTML = "";
-  for (let k = Math.min(fam.questions.length - 1, state.qi + 1); k >= state.qi; k--) {
+  for (let k = Math.min(qs.length - 1, state.qi + 1); k >= state.qi; k--) {
     const c = document.createElement("div"); c.className = "swcard";
     const depth = k - state.qi;
     c.style.transform = `translateY(${depth * 10}px) scale(${1 - depth * 0.04})`;
     c.style.zIndex = 10 - depth; c.style.opacity = depth ? 0.6 : 1;
     c.innerHTML = `
       <span class="chip" style="background:${cvar(fam.bg)};color:${cvar(fam.color)}">Barreras ${esc(fam.name.toLowerCase())}</span>
-      <div class="q">${esc(fam.questions[k].text)}</div>
+      <div class="q">${esc(qs[k].text)}</div>
       <button class="card-help" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 1.7-2.5 2-2.5 4"/><path d="M12 17h.01"/></svg>¿Qué observar? · ejemplos</button>
       <div class="hint"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>¿Esta barrera está presente en tu contexto?</div>
       <div class="stamp yes">Sí</div><div class="stamp no">No</div>`;
@@ -281,7 +284,7 @@ const gone = (card) => card && (card.classList.contains("gone-yes") || card.clas
 function answer(val) {
   const fam = orderFams()[state.di], card = topCard();
   if (!card || !fam || gone(card)) return;
-  const q = fam.questions[state.qi];
+  const q = deckQs(fam)[state.qi];
   if (val === "yes") {
     state.pendingCard = { questionId: q.id, familyId: fam.key, q: q.text };
     state.pendingCtx = new Set(); openCtx();
@@ -297,13 +300,13 @@ function nextCard() {
   const of = orderFams(); const fam = of[state.di];
   if (!fam) { renderDeck(); return; }
   state.qi++;
-  if (state.qi >= fam.questions.length) { state.di++; state.qi = 0; }
+  if (state.qi >= deckQs(fam).length) { state.di++; state.qi = 0; }
   persist(); renderDeck();
 }
 function prevCard() {
   const of = orderFams();
   if (state.qi > 0) state.qi--;
-  else if (state.di > 0) { state.di--; state.qi = of[state.di].questions.length - 1; }
+  else if (state.di > 0) { state.di--; state.qi = deckQs(of[state.di]).length - 1; }
   else return;
   const fam = orderFams()[state.di];
   delete state.answers[fam.key + "-" + state.qi];
@@ -373,15 +376,19 @@ function openCtx() { $("ctxOpts").querySelectorAll(".ctx-opt").forEach((o) => o.
 // Ayuda por pregunta
 function openHelp() {
   const fam = orderFams()[state.di]; if (!fam) return;
-  const q = fam.questions[state.qi];
+  const q = deckQs(fam)[state.qi];
   $("helpFam").innerHTML = `<span class="d" style="background:${cvar(fam.bg)};color:${cvar(fam.color)}">${fam.icon}</span><span style="color:${cvar(fam.color)}">Barreras ${esc(fam.name.toLowerCase())}</span>`;
   $("helpFam").style.background = cvar(fam.bg);
   $("helpQ").textContent = q.text;
   $("helpExpl").textContent = q.expl || "";
   const c = activeCond();
-  const condEx = c && c.ex && c.ex[fam.key];
+  // Si la pregunta ya es propia de la condición, sus ejemplos ya son específicos;
+  // si es genérica, aplicamos el override de ejemplos de la condición (ex) si existe.
+  const usingCondQ = !!(c && c.questions && c.questions[fam.key] && c.questions[fam.key].length);
+  const condEx = (!usingCondQ && c && c.ex) ? c.ex[fam.key] : null;
   const exList = (condEx && condEx.length) ? condEx : (q.examples || []);
-  $("helpExLbl").innerHTML = (condEx && condEx.length) ? `Ejemplos <span class="ad">· ${esc(c.name)}</span>` : "Ejemplos";
+  const adapted = (condEx && condEx.length) || usingCondQ;
+  $("helpExLbl").innerHTML = adapted ? `Ejemplos <span class="ad">· ${esc(c.name)}</span>` : "Ejemplos";
   $("helpEx").innerHTML = exList.map((x) => `<li>${esc(x)}</li>`).join("");
   $("helpSheet").classList.add("up"); $("helpScrim").classList.add("up");
 }

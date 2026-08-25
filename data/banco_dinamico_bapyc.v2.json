@@ -121,6 +121,170 @@
         "infraestructura": [
           "Reducir estímulos y ofrecer un espacio de calma."
         ]
+      },
+      "questions": {
+        "actitudinal": [
+          {
+            "id": "tea-act-01",
+            "text": "Se interpreta su conducta (moverse, evitar la mirada, insistir en algo) como grosería o capricho.",
+            "help": {
+              "expl": "Fíjate si su conducta se lee como comunicación o como una falta a sancionar.",
+              "ex": [
+                "Se le regaña por no mirar a los ojos.",
+                "Se toma su insistencia como berrinche.",
+                "Se castiga una conducta de autorregulación."
+              ]
+            },
+            "strategy": "Leer la conducta como comunicación y acordar apoyos, no sanciones."
+          },
+          {
+            "id": "tea-act-02",
+            "text": "Se le deja fuera del juego o del equipo por no seguir códigos sociales implícitos.",
+            "help": {
+              "expl": "Observa si queda fuera por no captar reglas sociales que nadie le enseñó.",
+              "ex": [
+                "Los compañeros lo dejan solo.",
+                "No se le explican las reglas del juego.",
+                "Se asume que \"no quiere\" convivir."
+              ]
+            },
+            "strategy": "Enseñar de forma explícita las reglas sociales y mediar la inclusión entre pares."
+          },
+          {
+            "id": "tea-act-03",
+            "text": "Se espera que interactúe como los demás, sin apoyos ni respetar sus tiempos.",
+            "help": {
+              "expl": "Nota si se le exige interacción sin prepararlo ni darle tiempo.",
+              "ex": [
+                "Se le obliga a trabajar en grupo sin prepararlo.",
+                "Su necesidad de estar solo se toma como rechazo.",
+                "No se respetan sus tiempos."
+              ]
+            },
+            "strategy": "Ofrecer apoyos y tiempos para la interacción, respetando su forma de participar."
+          },
+          {
+            "id": "tea-act-04",
+            "text": "Se le sobreexige o se le subestima a partir de ideas generales sobre el autismo.",
+            "help": {
+              "expl": "Fíjate si se decide por estereotipos en vez de mirar a la persona.",
+              "ex": [
+                "Se asume que \"no siente\".",
+                "Se asume que es \"genio\" en todo.",
+                "Se decide por él sin consultarle."
+              ]
+            },
+            "strategy": "Partir de la persona concreta y sus apoyos, no de estereotipos."
+          }
+        ],
+        "cultural": [
+          {
+            "id": "tea-cul-01",
+            "text": "No se anticipan los cambios de rutina o de actividad.",
+            "help": {
+              "expl": "Revisa si los cambios se avisan con tiempo y de forma visible.",
+              "ex": [
+                "Cambios repentinos de horario.",
+                "Simulacros sin aviso.",
+                "Cambio de maestro sin preparación."
+              ]
+            },
+            "strategy": "Anticipar rutinas y cambios con una agenda visual."
+          },
+          {
+            "id": "tea-cul-02",
+            "text": "Las instrucciones son largas, ambiguas o con doble sentido, sin apoyos visuales.",
+            "help": {
+              "expl": "Observa si las indicaciones son claras, cortas y con apoyo visual.",
+              "ex": [
+                "Varios pasos dados de una sola vez.",
+                "Ironías o sarcasmo.",
+                "\"Más o menos por ahí\"."
+              ]
+            },
+            "strategy": "Dar instrucciones claras y cortas, con apoyos visuales y sentido literal."
+          },
+          {
+            "id": "tea-cul-03",
+            "text": "No se consideran sus temas de interés para conectar con el aprendizaje.",
+            "help": {
+              "expl": "Nota si sus intereses se usan como puente o se descartan.",
+              "ex": [
+                "Se prohíben sus temas \"porque distrae\".",
+                "No se usan como puente.",
+                "Se ignoran sus fortalezas."
+              ]
+            },
+            "strategy": "Usar sus intereses como puente para el aprendizaje y la participación."
+          },
+          {
+            "id": "tea-cul-04",
+            "text": "La comunicación asume el lenguaje oral y el contacto visual como única vía válida.",
+            "help": {
+              "expl": "Revisa si se aceptan otras vías de comunicación.",
+              "ex": [
+                "\"Mírame cuando te hablo\".",
+                "No se aceptan respuestas escritas o con apoyos.",
+                "Se penaliza no hablar en público."
+              ]
+            },
+            "strategy": "Aceptar y ofrecer vías alternativas de comunicación."
+          }
+        ],
+        "infraestructura": [
+          {
+            "id": "tea-fis-01",
+            "text": "El ambiente tiene mucho ruido, luz o estímulos que lo saturan.",
+            "help": {
+              "expl": "Fíjate si el entorno sensorial le permite estar y aprender.",
+              "ex": [
+                "Aula ruidosa.",
+                "Luces intensas o parpadeantes.",
+                "Paredes saturadas de estímulos visuales."
+              ]
+            },
+            "strategy": "Reducir estímulos y adecuar el ambiente sensorial del aula."
+          },
+          {
+            "id": "tea-fis-02",
+            "text": "No hay un espacio de calma para autorregularse.",
+            "help": {
+              "expl": "Observa si puede retirarse a un lugar tranquilo cuando lo necesita.",
+              "ex": [
+                "No hay dónde calmarse.",
+                "Se le castiga por salirse.",
+                "Se le fuerza a permanecer saturado."
+              ]
+            },
+            "strategy": "Ofrecer un espacio de calma y permitir la autorregulación."
+          },
+          {
+            "id": "tea-fis-03",
+            "text": "Los cambios de espacio o las transiciones son bruscos y sin apoyo.",
+            "help": {
+              "expl": "Nota si las transiciones (aula, patio, comedor) tienen apoyos.",
+              "ex": [
+                "Se le apura sin avisar.",
+                "Ruido y multitud en los pasillos.",
+                "Sin referentes visuales de a dónde va."
+              ]
+            },
+            "strategy": "Apoyar las transiciones con avisos, referentes visuales y tiempo."
+          },
+          {
+            "id": "tea-fis-04",
+            "text": "Ciertos materiales o texturas le generan rechazo y no se ofrecen alternativas.",
+            "help": {
+              "expl": "Revisa si hay alternativas ante hipersensibilidades.",
+              "ex": [
+                "Se le obliga a usar material que le molesta.",
+                "No hay opciones.",
+                "Se ignora su malestar."
+              ]
+            },
+            "strategy": "Ofrecer alternativas de materiales y texturas según su sensibilidad."
+          }
+        ]
       }
     },
     {
@@ -153,6 +317,170 @@
         ],
         "actitudinal": [
           "Reconocer avances y esfuerzos; evitar etiquetas."
+        ]
+      },
+      "questions": {
+        "pedagogica": [
+          {
+            "id": "tdah-ped-01",
+            "text": "Las actividades son largas, sin pausas ni cambios de ritmo.",
+            "help": {
+              "expl": "Fíjate si hay pausas activas y cambios de ritmo.",
+              "ex": [
+                "Sesiones largas sin descanso.",
+                "Misma tarea por mucho tiempo.",
+                "Sin movimiento."
+              ]
+            },
+            "strategy": "Dividir en tareas cortas con pausas activas."
+          },
+          {
+            "id": "tdah-ped-02",
+            "text": "Las instrucciones son largas, sin recordatorios ni apoyos de organización.",
+            "help": {
+              "expl": "Observa si hay apoyos para organizarse y recordar.",
+              "ex": [
+                "Varios pasos de una vez.",
+                "Sin listas ni recordatorios.",
+                "Sin pistas visuales."
+              ]
+            },
+            "strategy": "Instrucciones cortas con apoyos visuales de organización y recordatorios."
+          },
+          {
+            "id": "tdah-ped-03",
+            "text": "No se ofrecen apoyos para sostener la atención ni regular impulsos.",
+            "help": {
+              "expl": "Nota si hay estrategias para mantener la atención.",
+              "ex": [
+                "Se le exige \"estar quieto\" sin apoyos.",
+                "Sin señales para retomar.",
+                "Sin roles activos."
+              ]
+            },
+            "strategy": "Incorporar apoyos de atención y autorregulación (señales, roles, movimiento útil)."
+          },
+          {
+            "id": "tdah-ped-04",
+            "text": "El material y el espacio de trabajo tienen muchos distractores.",
+            "help": {
+              "expl": "Revisa si el lugar reduce distractores.",
+              "ex": [
+                "Junto a la ventana o la puerta.",
+                "Escritorio saturado.",
+                "Mucho ruido visual."
+              ]
+            },
+            "strategy": "Reducir distractores y ubicarlo donde favorezca la concentración."
+          }
+        ],
+        "normativa": [
+          {
+            "id": "tdah-nor-01",
+            "text": "Se le sanciona por moverse o hablar en vez de canalizarlo.",
+            "help": {
+              "expl": "Mira si la norma castiga la conducta en vez de darle salida.",
+              "ex": [
+                "Se le castiga por pararse.",
+                "Se le deja sin recreo.",
+                "Se le exhibe."
+              ]
+            },
+            "strategy": "Acordar apoyos de autorregulación en vez de sanciones."
+          },
+          {
+            "id": "tdah-nor-02",
+            "text": "Los tiempos son rígidos, sin descansos ni ajustes.",
+            "help": {
+              "expl": "Observa si hay flexibilidad de tiempos y descansos.",
+              "ex": [
+                "Mismo tiempo para todos.",
+                "Sin pausas.",
+                "Se penaliza terminar distinto."
+              ]
+            },
+            "strategy": "Flexibilizar tiempos y prever descansos."
+          },
+          {
+            "id": "tdah-nor-03",
+            "text": "La evaluación penaliza el ritmo o los errores por impulsividad.",
+            "help": {
+              "expl": "Nota si la evaluación considera su proceso.",
+              "ex": [
+                "Se baja la calificación por \"descuidos\".",
+                "Sin oportunidad de revisar.",
+                "Sin apoyos."
+              ]
+            },
+            "strategy": "Considerar el proceso y permitir revisar antes de calificar."
+          },
+          {
+            "id": "tdah-nor-04",
+            "text": "No hay acuerdos claros de apoyos con la familia y el equipo.",
+            "help": {
+              "expl": "Revisa si los apoyos se acuerdan y se siguen.",
+              "ex": [
+                "Cada quien reacciona distinto.",
+                "Sin registro.",
+                "Sin corresponsabilidad."
+              ]
+            },
+            "strategy": "Acordar y dar seguimiento a los apoyos con familia y equipo."
+          }
+        ],
+        "actitudinal": [
+          {
+            "id": "tdah-act-01",
+            "text": "Se le etiqueta de \"inquieto\", \"flojo\" o \"problema\" antes de apoyarlo.",
+            "help": {
+              "expl": "Fíjate si se etiqueta en vez de apoyar.",
+              "ex": [
+                "\"Es un desastre\".",
+                "\"No pone de su parte\".",
+                "A la familia solo se le avisa lo malo."
+              ]
+            },
+            "strategy": "Reconocer avances y esfuerzos; evitar etiquetas."
+          },
+          {
+            "id": "tdah-act-02",
+            "text": "Se atribuyen sus conductas a mala voluntad o falta de esfuerzo.",
+            "help": {
+              "expl": "Observa si se lee su conducta como intención o como necesidad de apoyo.",
+              "ex": [
+                "\"Lo hace a propósito\".",
+                "Se le regaña por olvidar.",
+                "Se ignora su esfuerzo."
+              ]
+            },
+            "strategy": "Leer la conducta como necesidad de apoyo, no como mala intención."
+          },
+          {
+            "id": "tdah-act-03",
+            "text": "Se le excluye de responsabilidades por \"no poder con ellas\".",
+            "help": {
+              "expl": "Nota si se le confían tareas y roles.",
+              "ex": [
+                "Nunca se le da un encargo.",
+                "Se asume que fallará.",
+                "Se le aparta."
+              ]
+            },
+            "strategy": "Confiarle responsabilidades con los apoyos necesarios."
+          },
+          {
+            "id": "tdah-act-04",
+            "text": "Se le compara desfavorablemente con el resto del grupo.",
+            "help": {
+              "expl": "Revisa si se le compara o se valora su propio avance.",
+              "ex": [
+                "\"Por qué no eres como…\".",
+                "Se le exhibe.",
+                "Solo se ve lo que falta."
+              ]
+            },
+            "strategy": "Valorar su avance personal y evitar comparaciones."
+          }
         ]
       }
     },
@@ -188,6 +516,170 @@
         "normativa": [
           "Ofrecer formas alternativas de demostrar lo aprendido."
         ]
+      },
+      "questions": {
+        "actitudinal": [
+          {
+            "id": "di-act-01",
+            "text": "Se asume que \"no va a aprender eso\" y se le deja aparte.",
+            "help": {
+              "expl": "Fíjate si se le incluye en los aprendizajes o se le margina.",
+              "ex": [
+                "Algo distinto \"para ocuparlo\".",
+                "Se le sienta aparte.",
+                "No se le enseña el contenido."
+              ]
+            },
+            "strategy": "Incluirlo en los aprendizajes con los apoyos necesarios."
+          },
+          {
+            "id": "di-act-02",
+            "text": "Se le exige menos sin antes intentar apoyos.",
+            "help": {
+              "expl": "Observa si se baja la exigencia sin probar ajustes.",
+              "ex": [
+                "Se le pide \"lo mínimo\".",
+                "Se le deja copiar.",
+                "Se asume su techo."
+              ]
+            },
+            "strategy": "Sostener altas expectativas y probar apoyos antes de reducir la exigencia."
+          },
+          {
+            "id": "di-act-03",
+            "text": "Se le sobreprotege y se limita su autonomía.",
+            "help": {
+              "expl": "Nota si se hace por él lo que podría hacer con apoyo.",
+              "ex": [
+                "Se le resuelve todo.",
+                "No se le deja intentar.",
+                "Se decide por él."
+              ]
+            },
+            "strategy": "Fomentar su autonomía con acompañamiento y apoyos."
+          },
+          {
+            "id": "di-act-04",
+            "text": "Se le infantiliza o se le trata según su \"edad mental\".",
+            "help": {
+              "expl": "Revisa si se le trata acorde a su edad y con dignidad.",
+              "ex": [
+                "Se le habla como a un bebé.",
+                "Tareas por debajo de su edad.",
+                "Se le exhibe."
+              ]
+            },
+            "strategy": "Tratarlo acorde a su edad, con apoyos y respeto."
+          }
+        ],
+        "pedagogica": [
+          {
+            "id": "di-ped-01",
+            "text": "Se le da la misma actividad sin dividirla en pasos ni apoyos concretos.",
+            "help": {
+              "expl": "Fíjate si las tareas se fragmentan con material concreto.",
+              "ex": [
+                "Tarea completa sin pasos.",
+                "Sin material manipulable.",
+                "Sin ejemplos."
+              ]
+            },
+            "strategy": "Fragmentar las tareas en pasos, con material concreto y manipulable."
+          },
+          {
+            "id": "di-ped-02",
+            "text": "No se ajusta el nivel de complejidad a su conceptualización.",
+            "help": {
+              "expl": "Observa si el contenido se ajusta a su nivel.",
+              "ex": [
+                "Contenido abstracto sin base.",
+                "Salta niveles.",
+                "Sin verificar comprensión."
+              ]
+            },
+            "strategy": "Ajustar el nivel a su conceptualización y avanzar gradualmente."
+          },
+          {
+            "id": "di-ped-03",
+            "text": "No se le da tiempo ni repaso para consolidar.",
+            "help": {
+              "expl": "Nota si hay tiempo y práctica para afianzar.",
+              "ex": [
+                "Se avanza sin consolidar.",
+                "Sin repaso.",
+                "Se asume aprendido."
+              ]
+            },
+            "strategy": "Dar más tiempo y práctica para consolidar los aprendizajes."
+          },
+          {
+            "id": "di-ped-04",
+            "text": "La evaluación no reconoce sus avances ni otras formas de demostrar.",
+            "help": {
+              "expl": "Revisa si puede demostrar lo aprendido de varias formas.",
+              "ex": [
+                "Solo examen escrito.",
+                "No cuenta el proceso.",
+                "Sin apoyos."
+              ]
+            },
+            "strategy": "Diversificar la evaluación acorde a su nivel y reconocer avances."
+          }
+        ],
+        "normativa": [
+          {
+            "id": "di-nor-01",
+            "text": "El mismo examen sin ajustes, sin otra forma de demostrar lo que sabe.",
+            "help": {
+              "expl": "Mira si hay ajustes y alternativas en la evaluación.",
+              "ex": [
+                "Examen idéntico.",
+                "Sin apoyos.",
+                "Una sola vía."
+              ]
+            },
+            "strategy": "Ofrecer ajustes y formas alternativas de demostrar lo aprendido."
+          },
+          {
+            "id": "di-nor-02",
+            "text": "La acreditación no contempla ajustes razonables.",
+            "help": {
+              "expl": "Observa si hay ruta de acreditación con apoyos.",
+              "ex": [
+                "Criterio único.",
+                "Sin ruta de ajuste.",
+                "Condicionada a diagnóstico."
+              ]
+            },
+            "strategy": "Contemplar ajustes razonables en la acreditación."
+          },
+          {
+            "id": "di-nor-03",
+            "text": "Las normas asumen ritmos y respuestas uniformes.",
+            "help": {
+              "expl": "Nota si las reglas permiten ritmos distintos.",
+              "ex": [
+                "Mismos tiempos.",
+                "Se penaliza el ritmo.",
+                "Sin apoyos."
+              ]
+            },
+            "strategy": "Flexibilizar ritmos y vías de participación."
+          },
+          {
+            "id": "di-nor-04",
+            "text": "No hay seguimiento de sus apoyos con la familia y el equipo.",
+            "help": {
+              "expl": "Revisa si los apoyos se acuerdan y se revisan.",
+              "ex": [
+                "Sin registro.",
+                "Sin corresponsables.",
+                "Sin revisión."
+              ]
+            },
+            "strategy": "Acordar, registrar y revisar los apoyos con familia y equipo."
+          }
+        ]
       }
     },
     {
@@ -221,6 +713,170 @@
         "normativa": [
           "Ofrecer ajustes razonables y formas alternativas de demostrar lo aprendido."
         ]
+      },
+      "questions": {
+        "actitudinal": [
+          {
+            "id": "down-act-01",
+            "text": "Se dan por hecho límites en lo que puede aprender antes de intentar apoyos.",
+            "help": {
+              "expl": "Fíjate si se decide de antemano hasta dónde \"puede llegar\", sin probar apoyos.",
+              "ex": [
+                "Se dice \"hasta aquí llega\" sin intentarlo.",
+                "Se le exime de los retos \"porque no va a poder\".",
+                "Se asume que su nivel es fijo."
+              ]
+            },
+            "strategy": "Sensibilizar y sostener altas expectativas; probar apoyos antes de fijar límites."
+          },
+          {
+            "id": "down-act-02",
+            "text": "Se hacen por él o ella tareas que podría realizar con apoyo, limitando su autonomía.",
+            "help": {
+              "expl": "Observa si \"ayudar de más\" impide que haga lo que sí puede.",
+              "ex": [
+                "Se le resuelve el trabajo en vez de guiarlo.",
+                "No se le deja intentar solo.",
+                "Se le evita cualquier esfuerzo \"para no frustrarlo\"."
+              ]
+            },
+            "strategy": "Fomentar la autonomía: acompañar con apoyos, no hacer por el alumno."
+          },
+          {
+            "id": "down-act-03",
+            "text": "Se le trata como \"la mascota\" del grupo y se le asignan solo roles simbólicos.",
+            "help": {
+              "expl": "Nota si se le celebra todo sin exigir ni darle responsabilidades reales.",
+              "ex": [
+                "Solo se le dan tareas decorativas.",
+                "Se le habla como a alguien mucho menor.",
+                "No se le confían encargos del grupo."
+              ]
+            },
+            "strategy": "Darle responsabilidades y roles reales acordes a su edad."
+          },
+          {
+            "id": "down-act-04",
+            "text": "Se espera que socialice o participe menos que el resto del grupo.",
+            "help": {
+              "expl": "Revisa si se le incluye en equipos, juegos y decisiones como a los demás.",
+              "ex": [
+                "No se le integra a los equipos.",
+                "Se asume que \"no entiende\" la dinámica.",
+                "Queda fuera de las responsabilidades compartidas."
+              ]
+            },
+            "strategy": "Garantizar su participación en equipos y decisiones, con apoyos."
+          }
+        ],
+        "pedagogica": [
+          {
+            "id": "down-ped-01",
+            "text": "Las actividades no se dividen en pasos ni usan material concreto y visual.",
+            "help": {
+              "expl": "Fíjate si las tareas se presentan en pasos, con apoyos visuales y manipulables.",
+              "ex": [
+                "Instrucciones largas dadas de una sola vez.",
+                "Sin pictogramas ni apoyos visuales.",
+                "Sin material que pueda tocar y manipular."
+              ]
+            },
+            "strategy": "Presentar las tareas en pasos, con apoyos visuales y material concreto."
+          },
+          {
+            "id": "down-ped-02",
+            "text": "No se ajustan el ritmo ni el tiempo a su proceso de aprendizaje.",
+            "help": {
+              "expl": "Observa si se le da el tiempo y el repaso que necesita para consolidar.",
+              "ex": [
+                "Mismo tiempo que todo el grupo.",
+                "Se avanza sin asegurar que consolidó.",
+                "No hay repaso ni práctica adicional."
+              ]
+            },
+            "strategy": "Ajustar ritmo y tiempo; asegurar la consolidación con repaso."
+          },
+          {
+            "id": "down-ped-03",
+            "text": "La lectura, la escritura o los números se abordan sin apoyos graduados.",
+            "help": {
+              "expl": "Nota si hay pasos intermedios entre lo concreto y lo abstracto.",
+              "ex": [
+                "Se salta a lo abstracto sin apoyos.",
+                "Sin pautas ni modelos a seguir.",
+                "Sin apoyos visuales para leer o contar."
+              ]
+            },
+            "strategy": "Ir de lo concreto a lo abstracto con pautas, modelos y apoyos graduados."
+          },
+          {
+            "id": "down-ped-04",
+            "text": "No se usan sus fortalezas (memoria visual, imitación, rutinas) para enseñar.",
+            "help": {
+              "expl": "Revisa si la enseñanza se apoya en lo visual, el modelado y las rutinas.",
+              "ex": [
+                "Solo se usa el canal verbal.",
+                "No se modela con ejemplos a imitar.",
+                "No se aprovechan rutinas de apoyo."
+              ]
+            },
+            "strategy": "Enseñar apoyándose en lo visual, el modelado y las rutinas."
+          }
+        ],
+        "normativa": [
+          {
+            "id": "down-nor-01",
+            "text": "Se le evalúa con el mismo examen y criterios, sin ajustes ni formas alternativas.",
+            "help": {
+              "expl": "Mira si puede demostrar lo que sabe de más de una forma.",
+              "ex": [
+                "Un solo examen escrito decide todo.",
+                "No se permiten apoyos en la evaluación.",
+                "No cuenta demostrarlo de otra manera."
+              ]
+            },
+            "strategy": "Diversificar la evaluación y permitir demostrar lo aprendido de varias formas."
+          },
+          {
+            "id": "down-nor-02",
+            "text": "Las reglas de acreditación o promoción no contemplan sus ajustes razonables.",
+            "help": {
+              "expl": "Revisa si existe una ruta clara para acreditar con apoyos.",
+              "ex": [
+                "Criterio único de promoción para todos.",
+                "No hay ruta de ajuste razonable.",
+                "Se condiciona la promoción a un diagnóstico."
+              ]
+            },
+            "strategy": "Definir una ruta de ajustes razonables para acreditar."
+          },
+          {
+            "id": "down-nor-03",
+            "text": "Las normas de participación asumen ritmos y respuestas iguales para todos.",
+            "help": {
+              "expl": "Observa si las reglas permiten tiempos y vías distintas para responder.",
+              "ex": [
+                "Turnos rígidos sin margen.",
+                "Se penaliza el tiempo extra.",
+                "Sin apoyos para poder responder."
+              ]
+            },
+            "strategy": "Flexibilizar tiempos y vías de respuesta según su proceso."
+          },
+          {
+            "id": "down-nor-04",
+            "text": "No hay acuerdos claros de seguimiento de sus apoyos con la familia y el equipo.",
+            "help": {
+              "expl": "Revisa si los apoyos se acuerdan, se registran y se revisan.",
+              "ex": [
+                "Apoyos sin registro ni responsables.",
+                "Sin corresponsabilidad con la familia.",
+                "Sin fecha de revisión."
+              ]
+            },
+            "strategy": "Acordar y registrar los apoyos con la familia y el equipo, con revisión."
+          }
+        ]
       }
     },
     {
@@ -247,6 +903,116 @@
         ],
         "pedagogica": [
           "Ofrecer material en macrotipo, audio o braille y describir en voz alta lo que se escribe."
+        ]
+      },
+      "questions": {
+        "infraestructura": [
+          {
+            "id": "visual-fis-01",
+            "text": "Material solo en letra pequeña, sin macrotipo, audio ni braille.",
+            "help": {
+              "expl": "Fíjate si hay versiones accesibles del material.",
+              "ex": [
+                "Hojas en letra chica.",
+                "Sin audio.",
+                "Sin braille."
+              ]
+            },
+            "strategy": "Ofrecer material en macrotipo, audio o braille según su necesidad."
+          },
+          {
+            "id": "visual-fis-02",
+            "text": "La iluminación es insuficiente para su resto visual.",
+            "help": {
+              "expl": "Observa si la luz favorece su visión.",
+              "ex": [
+                "Aula oscura.",
+                "Reflejos.",
+                "Contraluz en el pizarrón."
+              ]
+            },
+            "strategy": "Mejorar la iluminación y evitar reflejos y contraluces."
+          },
+          {
+            "id": "visual-fis-03",
+            "text": "Está lejos del pizarrón o de la fuente de información y no alcanza a ver.",
+            "help": {
+              "expl": "Nota si su ubicación aprovecha su resto visual.",
+              "ex": [
+                "Hasta atrás.",
+                "Lejos del pizarrón.",
+                "Sin acercarse a los apoyos."
+              ]
+            },
+            "strategy": "Ubicarlo donde aproveche su resto visual."
+          },
+          {
+            "id": "visual-fis-04",
+            "text": "El entorno tiene obstáculos o cambios que dificultan su desplazamiento seguro.",
+            "help": {
+              "expl": "Revisa si puede desplazarse con seguridad.",
+              "ex": [
+                "Objetos en el paso.",
+                "Cambios de mobiliario sin avisar.",
+                "Sin referencias."
+              ]
+            },
+            "strategy": "Mantener rutas despejadas y avisar los cambios del entorno."
+          }
+        ],
+        "pedagogica": [
+          {
+            "id": "visual-ped-01",
+            "text": "Se dan instrucciones señalando \"esto/aquí\" sin describirlas en voz alta.",
+            "help": {
+              "expl": "Fíjate si lo visual se describe verbalmente.",
+              "ex": [
+                "\"Esto va aquí\".",
+                "Se muestra sin decir.",
+                "Se escribe sin leer."
+              ]
+            },
+            "strategy": "Describir en voz alta lo que se muestra o se escribe."
+          },
+          {
+            "id": "visual-ped-02",
+            "text": "No hay versiones accesibles de los materiales de trabajo.",
+            "help": {
+              "expl": "Observa si los materiales tienen alternativa accesible.",
+              "ex": [
+                "Imágenes sin descripción.",
+                "Sin relieve.",
+                "Sin audio."
+              ]
+            },
+            "strategy": "Preparar versiones accesibles (descritas, en relieve o audio)."
+          },
+          {
+            "id": "visual-ped-03",
+            "text": "Se depende de lo visual sin apoyos táctiles o auditivos.",
+            "help": {
+              "expl": "Nota si se usan otros canales además del visual.",
+              "ex": [
+                "Solo pizarrón.",
+                "Sin material táctil.",
+                "Sin apoyos sonoros."
+              ]
+            },
+            "strategy": "Incorporar apoyos táctiles y auditivos."
+          },
+          {
+            "id": "visual-ped-04",
+            "text": "No se le da tiempo adicional para explorar y procesar la información.",
+            "help": {
+              "expl": "Revisa si tiene el tiempo que requiere.",
+              "ex": [
+                "Mismo tiempo.",
+                "Se retira el material pronto.",
+                "Sin explorar."
+              ]
+            },
+            "strategy": "Dar tiempo adicional para explorar y procesar."
+          }
         ]
       }
     },
@@ -281,6 +1047,118 @@
         "cultural": [
           "Valorar y usar la Lengua de Señas cuando corresponda."
         ]
+      },
+      "questions": {
+        "infraestructura": [
+          {
+            "id": "auditiva-fis-01",
+            "text": "El aula es ruidosa y dificulta escuchar.",
+            "help": {
+              "expl": "Fíjate si el ruido interfiere con la escucha.",
+              "ex": [
+                "Ruido de patio.",
+                "Eco.",
+                "Equipos ruidosos."
+              ]
+            },
+            "strategy": "Reducir el ruido y mejorar la acústica del aula."
+          },
+          {
+            "id": "auditiva-fis-02",
+            "text": "Está lejos o no ve el rostro de quien habla.",
+            "help": {
+              "expl": "Observa si puede ver el rostro y los labios.",
+              "ex": [
+                "Hasta atrás.",
+                "De espaldas a quien habla.",
+                "Poca luz en la cara."
+              ]
+            },
+            "strategy": "Ubicarlo para ver el rostro y los labios de quien habla."
+          },
+          {
+            "id": "auditiva-fis-03",
+            "text": "No hay apoyos técnicos (FM, subtítulos) cuando se requieren.",
+            "help": {
+              "expl": "Nota si hay apoyos técnicos accesibles.",
+              "ex": [
+                "Sin sistema FM.",
+                "Videos sin subtítulos.",
+                "Sin avisos visuales."
+              ]
+            },
+            "strategy": "Gestionar apoyos técnicos (FM, subtítulos, avisos visuales)."
+          }
+        ],
+        "pedagogica": [
+          {
+            "id": "auditiva-ped-01",
+            "text": "Se habla de espaldas o sin apoyos visuales.",
+            "help": {
+              "expl": "Fíjate si se habla de frente y con apoyos visuales.",
+              "ex": [
+                "Se explica escribiendo de espaldas.",
+                "Sin gestos ni imágenes.",
+                "Sin texto de apoyo."
+              ]
+            },
+            "strategy": "Hablar de frente, con apoyos visuales y textos de apoyo."
+          },
+          {
+            "id": "auditiva-ped-02",
+            "text": "No hay subtítulos ni intérprete cuando se requiere.",
+            "help": {
+              "expl": "Observa si el contenido oral tiene alternativa visual.",
+              "ex": [
+                "Videos sin subtítulos.",
+                "Sin intérprete de LSM.",
+                "Instrucciones solo orales."
+              ]
+            },
+            "strategy": "Proveer subtítulos o intérprete cuando se requiera."
+          },
+          {
+            "id": "auditiva-ped-03",
+            "text": "Las instrucciones y avisos son solo auditivos.",
+            "help": {
+              "expl": "Nota si la información importante también es visual.",
+              "ex": [
+                "Avisos solo hablados.",
+                "Timbre sin señal visual.",
+                "Indicaciones al aire."
+              ]
+            },
+            "strategy": "Duplicar en formato visual las instrucciones y avisos."
+          }
+        ],
+        "cultural": [
+          {
+            "id": "auditiva-cul-01",
+            "text": "No se considera la Lengua de Señas como parte de la comunicación.",
+            "help": {
+              "expl": "Fíjate si se valora y usa la LSM cuando corresponde.",
+              "ex": [
+                "Se le prohíbe señar.",
+                "Nadie del entorno seña.",
+                "Se le exige oralizar."
+              ]
+            },
+            "strategy": "Valorar y usar la Lengua de Señas cuando corresponda."
+          },
+          {
+            "id": "auditiva-cul-02",
+            "text": "Se asume que \"no participa\" cuando en realidad no accede a la información.",
+            "help": {
+              "expl": "Observa si su no-participación es por falta de acceso.",
+              "ex": [
+                "Se interpreta como desinterés.",
+                "No se verifica que comprendió.",
+                "Se le deja fuera."
+              ]
+            },
+            "strategy": "Asegurar el acceso a la información antes de interpretar su participación."
+          }
+        ]
       }
     },
     {
@@ -305,6 +1183,103 @@
         ],
         "normativa": [
           "Ofrecer formas alternativas de participar y responder."
+        ]
+      },
+      "questions": {
+        "infraestructura": [
+          {
+            "id": "motriz-fis-01",
+            "text": "Ausencia de rampas, accesos o mobiliario que pueda usar.",
+            "help": {
+              "expl": "Fíjate si puede entrar, desplazarse y usar el mobiliario.",
+              "ex": [
+                "Sin rampa.",
+                "Baño inaccesible.",
+                "Banca fija que no puede usar."
+              ]
+            },
+            "strategy": "Adecuar accesos y mobiliario para su uso autónomo."
+          },
+          {
+            "id": "motriz-fis-02",
+            "text": "Los espacios son estrechos e impiden su desplazamiento autónomo.",
+            "help": {
+              "expl": "Observa si puede circular por el aula y el plantel.",
+              "ex": [
+                "Pasillos estrechos.",
+                "Mobiliario apretado.",
+                "Obstáculos en el paso."
+              ]
+            },
+            "strategy": "Ampliar y despejar las rutas de circulación."
+          },
+          {
+            "id": "motriz-fis-03",
+            "text": "Su ubicación no le permite participar ni alcanzar los materiales.",
+            "help": {
+              "expl": "Nota si desde su lugar puede ver, alcanzar y participar.",
+              "ex": [
+                "Lejos del pizarrón.",
+                "Materiales fuera de alcance.",
+                "Sin espacio para su equipo."
+              ]
+            },
+            "strategy": "Ubicarlo y organizar los materiales a su alcance."
+          },
+          {
+            "id": "motriz-fis-04",
+            "text": "No hay apoyos para actividades que exigen movimiento o manipulación fina.",
+            "help": {
+              "expl": "Revisa si hay adaptaciones para escribir, manipular o moverse.",
+              "ex": [
+                "Sin adaptadores.",
+                "Se le excluye de educación física.",
+                "Sin material adaptado."
+              ]
+            },
+            "strategy": "Ofrecer adaptaciones y apoyos para el movimiento y la manipulación."
+          }
+        ],
+        "normativa": [
+          {
+            "id": "motriz-nor-01",
+            "text": "Las actividades asumen que todos se mueven o escriben igual.",
+            "help": {
+              "expl": "Fíjate si las tareas contemplan otras formas de responder.",
+              "ex": [
+                "Se exige escribir a mano.",
+                "Se penaliza la lentitud.",
+                "Sin alternativas."
+              ]
+            },
+            "strategy": "Ofrecer formas alternativas de participar y responder."
+          },
+          {
+            "id": "motriz-nor-02",
+            "text": "Los tiempos no consideran que requiere más para ejecutar.",
+            "help": {
+              "expl": "Observa si hay flexibilidad de tiempo.",
+              "ex": [
+                "Mismo tiempo.",
+                "Se penaliza terminar tarde.",
+                "Sin apoyos."
+              ]
+            },
+            "strategy": "Flexibilizar los tiempos de ejecución."
+          },
+          {
+            "id": "motriz-nor-03",
+            "text": "Se le excluye de actividades por \"seguridad\" sin buscar ajustes.",
+            "help": {
+              "expl": "Nota si se le incluye con ajustes en vez de excluir.",
+              "ex": [
+                "No va a la excursión.",
+                "Se le deja fuera de deporte.",
+                "Se decide por él."
+              ]
+            },
+            "strategy": "Incluirlo con los ajustes necesarios en lugar de excluir."
+          }
         ]
       }
     },
@@ -334,6 +1309,131 @@
         "cultural": [
           "Dar más tiempo y vías no verbales para participar."
         ]
+      },
+      "questions": {
+        "cultural": [
+          {
+            "id": "lenguaje-cul-01",
+            "text": "No se usan apoyos visuales ni comunicación alternativa.",
+            "help": {
+              "expl": "Fíjate si hay apoyos y sistemas de comunicación alternativa.",
+              "ex": [
+                "Solo lenguaje oral.",
+                "Sin pictogramas.",
+                "Sin tableros."
+              ]
+            },
+            "strategy": "Incorporar apoyos visuales y comunicación alternativa."
+          },
+          {
+            "id": "lenguaje-cul-02",
+            "text": "La comunicación con él o ella asume el habla como única vía.",
+            "help": {
+              "expl": "Observa si se aceptan otras vías para expresarse.",
+              "ex": [
+                "Se le exige responder hablando.",
+                "Se le apura.",
+                "Se ignoran sus gestos."
+              ]
+            },
+            "strategy": "Aceptar y ofrecer vías no verbales para comunicarse."
+          },
+          {
+            "id": "lenguaje-cul-03",
+            "text": "No se le da tiempo suficiente para expresarse.",
+            "help": {
+              "expl": "Nota si se respeta su ritmo al comunicarse.",
+              "ex": [
+                "Se le interrumpe.",
+                "Se responde por él.",
+                "Se le apura."
+              ]
+            },
+            "strategy": "Dar más tiempo y no responder por él."
+          }
+        ],
+        "pedagogica": [
+          {
+            "id": "lenguaje-ped-01",
+            "text": "Se depende solo del lenguaje oral para explicar y evaluar.",
+            "help": {
+              "expl": "Fíjate si hay otros canales además del oral.",
+              "ex": [
+                "Instrucciones solo habladas.",
+                "Evaluación oral.",
+                "Sin apoyos visuales."
+              ]
+            },
+            "strategy": "Diversificar canales: apoyos visuales, escritos y manipulativos."
+          },
+          {
+            "id": "lenguaje-ped-02",
+            "text": "No se verifica la comprensión ni se ofrecen apoyos para seguir la clase.",
+            "help": {
+              "expl": "Observa si se comprueba que entendió y se le apoya.",
+              "ex": [
+                "Se asume que comprendió.",
+                "Sin repetir de otra forma.",
+                "Sin apoyos."
+              ]
+            },
+            "strategy": "Verificar la comprensión y ofrecer apoyos para seguir la clase."
+          },
+          {
+            "id": "lenguaje-ped-03",
+            "text": "La evaluación exige respuestas verbales complejas.",
+            "help": {
+              "expl": "Nota si puede demostrar lo aprendido sin depender del lenguaje oral.",
+              "ex": [
+                "Preguntas abiertas orales.",
+                "Sin opciones.",
+                "Sin apoyos."
+              ]
+            },
+            "strategy": "Permitir demostrar lo aprendido por vías no verbales."
+          }
+        ],
+        "actitudinal": [
+          {
+            "id": "lenguaje-act-01",
+            "text": "Se interpreta su silencio como que \"no sabe\" o \"no quiere\".",
+            "help": {
+              "expl": "Fíjate si se asume incapacidad o falta de voluntad.",
+              "ex": [
+                "\"No participa\".",
+                "\"No sabe\".",
+                "Se le deja de lado."
+              ]
+            },
+            "strategy": "No interpretar el silencio como incapacidad; ofrecer vías y tiempo."
+          },
+          {
+            "id": "lenguaje-act-02",
+            "text": "Se le corrige o expone al hablar, frente al grupo.",
+            "help": {
+              "expl": "Observa si se le corrige de forma que lo inhibe.",
+              "ex": [
+                "Se le corrige en público.",
+                "Se ríen.",
+                "Se le presiona a repetir."
+              ]
+            },
+            "strategy": "Crear un clima seguro; corregir con respeto y sin exponer."
+          },
+          {
+            "id": "lenguaje-act-03",
+            "text": "Se le excluye de actividades que implican hablar.",
+            "help": {
+              "expl": "Nota si se le incluye con apoyos en actividades comunicativas.",
+              "ex": [
+                "No se le da turno.",
+                "Se le omite en exposiciones.",
+                "Se asume que no puede."
+              ]
+            },
+            "strategy": "Incluirlo con apoyos en las actividades comunicativas."
+          }
+        ]
       }
     },
     {
@@ -362,6 +1462,118 @@
         ],
         "actitudinal": [
           "Reconocer y potenciar sus aptitudes sin sobrecargarlo."
+        ]
+      },
+      "questions": {
+        "pedagogica": [
+          {
+            "id": "cast-ped-01",
+            "text": "Se le da lo mismo que al grupo, sin enriquecimiento ni reto.",
+            "help": {
+              "expl": "Fíjate si hay retos y profundización para él.",
+              "ex": [
+                "Misma tarea.",
+                "Termina y espera.",
+                "Sin material adicional."
+              ]
+            },
+            "strategy": "Enriquecer y profundizar con retos y proyectos."
+          },
+          {
+            "id": "cast-ped-02",
+            "text": "Termina rápido y se aburre, sin nuevas propuestas.",
+            "help": {
+              "expl": "Observa si hay actividades para cuando termina.",
+              "ex": [
+                "Se le deja \"ayudar a otros\".",
+                "Sin nada nuevo.",
+                "Se distrae."
+              ]
+            },
+            "strategy": "Prever propuestas de ampliación cuando termina."
+          },
+          {
+            "id": "cast-ped-03",
+            "text": "No se le permite avanzar a su ritmo ni profundizar sus intereses.",
+            "help": {
+              "expl": "Nota si puede avanzar y profundizar.",
+              "ex": [
+                "Se le frena.",
+                "Mismo ritmo.",
+                "Se ignoran sus intereses."
+              ]
+            },
+            "strategy": "Permitirle avanzar y profundizar en sus intereses."
+          }
+        ],
+        "actitudinal": [
+          {
+            "id": "cast-act-01",
+            "text": "Se le frena para \"no adelantarse\" o se le encarga cuidar a otros.",
+            "help": {
+              "expl": "Fíjate si se le limita o se le usa como ayudante.",
+              "ex": [
+                "\"Espera al resto\".",
+                "Se le pone a enseñar.",
+                "Se le frena."
+              ]
+            },
+            "strategy": "Reconocer y potenciar sus aptitudes sin sobrecargarlo."
+          },
+          {
+            "id": "cast-act-02",
+            "text": "Se asume que \"no necesita apoyo\" y se le desatiende.",
+            "help": {
+              "expl": "Observa si se atiende su necesidad de reto y acompañamiento.",
+              "ex": [
+                "\"Él va bien solo\".",
+                "Sin seguimiento.",
+                "Sin retos."
+              ]
+            },
+            "strategy": "Acompañar su desarrollo con retos y seguimiento."
+          },
+          {
+            "id": "cast-act-03",
+            "text": "Se malinterpretan su intensidad o su sensibilidad como problema.",
+            "help": {
+              "expl": "Nota si sus características se leen como conducta problemática.",
+              "ex": [
+                "\"Es intenso\".",
+                "\"Cuestiona todo\".",
+                "Se le sanciona por aburrirse."
+              ]
+            },
+            "strategy": "Comprender su perfil y canalizar su intensidad de forma positiva."
+          }
+        ],
+        "normativa": [
+          {
+            "id": "cast-nor-01",
+            "text": "La organización no le permite avanzar a su ritmo.",
+            "help": {
+              "expl": "Fíjate si las normas permiten flexibilidad y aceleración.",
+              "ex": [
+                "Mismo currículo y ritmo.",
+                "Sin opciones.",
+                "Sin acuerdos."
+              ]
+            },
+            "strategy": "Flexibilizar la organización para permitir su avance."
+          },
+          {
+            "id": "cast-nor-02",
+            "text": "No hay ruta para enriquecimiento o aceleración.",
+            "help": {
+              "expl": "Observa si existe una ruta formal de atención.",
+              "ex": [
+                "Sin plan.",
+                "Sin acuerdos con dirección.",
+                "Sin seguimiento."
+              ]
+            },
+            "strategy": "Definir una ruta de enriquecimiento o aceleración con seguimiento."
+          }
         ]
       }
     },
