@@ -43,6 +43,10 @@
           <svg class="harrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </button>
       </div>
+      <button class="install-btn" id="installBtn" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        Instalar en la pantalla de inicio
+      </button>
     </div>
   </section>
 
@@ -244,6 +248,15 @@
       </div>
     </div>
   </section>
+
+  <!-- Hoja: instrucciones para instalar (iOS / navegador sin API) -->
+  <div class="ctxscrim" id="installScrim"></div>
+  <div class="ctxsheet" id="installSheet">
+    <h3 id="installTitle">Instalar en tu iPhone</h3>
+    <p id="installIntro">Para tenerla como app —con ícono propio y a pantalla completa, funcionando sin internet— agrégala a tu pantalla de inicio:</p>
+    <ol class="install-steps" id="installSteps"></ol>
+    <button class="cta" id="installClose">Entendido</button>
+  </div>
 
   <!-- Hoja: selector de condición -->
   <div class="ctxscrim" id="condScrim"></div>
