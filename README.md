@@ -111,3 +111,5 @@ Luego el docente abre el enlace en **Safari (iPhone)** → *Compartir* →
    Fundamentos, Acerca de (con contacto `arthyonapps@gmail.com`) e historial.
 3. Pulido: gesto de swipe en iOS real, exportar PDF con mejor formato, y afinar
    textos/íconos con docentes.
+
+<!-- deploy test: 23:59 -->
