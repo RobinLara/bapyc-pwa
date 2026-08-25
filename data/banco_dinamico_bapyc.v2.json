@@ -1,0 +1,943 @@
+{
+  "schemaVersion": "2.0.0",
+  "bankId": "banco-dinamico-bapyc-v2",
+  "createdAt": "2026-08-23",
+  "status": "draft",
+  "source": {
+    "flow": "design/prototipo-bapyc-dinamico.html",
+    "content": "docs/instrumento_dinamico_bapyc.md",
+    "references": "guia E017, BAP y apoyos, cuestionarios de deteccion; banco_preguntas_bapyc.v1.json"
+  },
+  "purpose": "Identificar BAPyC del contexto mediante flujo dinamico: semaforo (tamiz por familia) y baraja (profundizacion por familia senalada). No diagnostica al alumno.",
+  "scales": {
+    "semaforo": [
+      {
+        "id": "green",
+        "label": "Sin señal",
+        "flags": false
+      },
+      {
+        "id": "amber",
+        "label": "Con dudas",
+        "flags": true
+      },
+      {
+        "id": "red",
+        "label": "Me preocupa",
+        "flags": true
+      }
+    ],
+    "card": [
+      {
+        "id": "no",
+        "label": "No lo veo"
+      },
+      {
+        "id": "idk",
+        "label": "No sé"
+      },
+      {
+        "id": "yes",
+        "label": "Sí lo veo"
+      }
+    ]
+  },
+  "scopes": [
+    {
+      "id": "alumno",
+      "short": "Alumno/a",
+      "name": "Un alumno o alumna",
+      "sub": "Valoración individual.",
+      "ref": "Nombre o alias del alumno/a",
+      "allowsCondition": true
+    },
+    {
+      "id": "grupo",
+      "short": "Grupo",
+      "name": "Un grupo o aula",
+      "sub": "Un grado o grupo específico.",
+      "ref": "Grado y grupo (ej. 3°B)",
+      "allowsCondition": false
+    },
+    {
+      "id": "escuela",
+      "short": "Escuela",
+      "name": "La escuela o plantel",
+      "sub": "",
+      "ref": "Nombre o clave del plantel",
+      "allowsCondition": false
+    }
+  ],
+  "contexts": [
+    {
+      "id": "escolar",
+      "name": "Escolar",
+      "tag": "Escolar",
+      "desc": "Gestión, reglamentos, cultura del plantel"
+    },
+    {
+      "id": "aulico",
+      "name": "Áulico",
+      "tag": "Áulico",
+      "desc": "Práctica docente, planeación, evaluación"
+    },
+    {
+      "id": "sociofamiliar",
+      "name": "Familiar",
+      "tag": "Familiar",
+      "desc": "Relación escuela-familia, apoyos en casa"
+    }
+  ],
+  "conditions": [
+    {
+      "id": "tea",
+      "name": "TEA (autismo)",
+      "fams": [
+        "actitudinal",
+        "cultural",
+        "infraestructura"
+      ],
+      "ex": {
+        "actitudinal": [
+          "Se interpreta su conducta como \"grosería\" o \"capricho\".",
+          "Se le excluye del juego por no seguir reglas sociales no dichas."
+        ],
+        "cultural": [
+          "No se anticipan los cambios de rutina ni de actividad.",
+          "Instrucciones largas y ambiguas, sin apoyos visuales."
+        ],
+        "infraestructura": [
+          "Ambiente con mucho ruido, luz o estímulos que lo saturan.",
+          "No hay un espacio de calma para autorregularse."
+        ]
+      },
+      "routes": {
+        "actitudinal": [
+          "Leer la conducta como comunicación y acordar apoyos, no sanciones."
+        ],
+        "cultural": [
+          "Anticipar rutinas y cambios con una agenda visual."
+        ],
+        "infraestructura": [
+          "Reducir estímulos y ofrecer un espacio de calma."
+        ]
+      }
+    },
+    {
+      "id": "tdah",
+      "name": "TDAH",
+      "fams": [
+        "pedagogica",
+        "normativa",
+        "actitudinal"
+      ],
+      "ex": {
+        "pedagogica": [
+          "Actividades largas sin pausas ni cambios de ritmo.",
+          "Instrucciones largas sin recordatorios ni apoyos de organización."
+        ],
+        "normativa": [
+          "Se le sanciona por moverse o hablar en vez de canalizarlo.",
+          "Tiempos rígidos, sin descansos."
+        ],
+        "actitudinal": [
+          "Se le etiqueta de \"inquieto\" o \"flojo\" antes de apoyarlo."
+        ]
+      },
+      "routes": {
+        "pedagogica": [
+          "Dividir en tareas cortas con pausas activas y apoyos de organización."
+        ],
+        "normativa": [
+          "Acordar apoyos de autorregulación en vez de sanciones."
+        ],
+        "actitudinal": [
+          "Reconocer avances y esfuerzos; evitar etiquetas."
+        ]
+      }
+    },
+    {
+      "id": "di",
+      "name": "Discapacidad intelectual",
+      "fams": [
+        "actitudinal",
+        "pedagogica",
+        "normativa"
+      ],
+      "ex": {
+        "actitudinal": [
+          "Se asume que \"no va a aprender eso\" y se le deja aparte.",
+          "Se le exige menos sin antes intentar apoyos."
+        ],
+        "pedagogica": [
+          "Se le da la misma actividad sin dividirla en pasos ni apoyos concretos.",
+          "No se ajusta el nivel de complejidad a su conceptualización."
+        ],
+        "normativa": [
+          "El mismo examen sin ajustes, sin otra forma de demostrar lo que sabe."
+        ]
+      },
+      "routes": {
+        "pedagogica": [
+          "Diversificar la evaluación acorde a su nivel de conceptualización.",
+          "Fragmentar las tareas en pasos, con material concreto y manipulable."
+        ],
+        "actitudinal": [
+          "Sostener altas expectativas y registrar avances, no solo el resultado."
+        ],
+        "normativa": [
+          "Ofrecer formas alternativas de demostrar lo aprendido."
+        ]
+      }
+    },
+    {
+      "id": "down",
+      "name": "Síndrome de Down",
+      "fams": [
+        "actitudinal",
+        "pedagogica",
+        "normativa"
+      ],
+      "ex": {
+        "actitudinal": [
+          "Se asume de antemano que \"no va a poder\" y se le exige menos.",
+          "Se le sobreprotege y se limita su autonomía."
+        ],
+        "pedagogica": [
+          "Se le da la misma actividad sin apoyos concretos ni pasos.",
+          "No se ajusta el ritmo ni el nivel; se le deja atrás."
+        ],
+        "normativa": [
+          "El mismo examen y criterios sin ajustes ni formas alternativas de demostrar lo que sabe."
+        ]
+      },
+      "routes": {
+        "pedagogica": [
+          "Fragmentar en pasos, con material concreto, apoyos visuales y más tiempo."
+        ],
+        "actitudinal": [
+          "Sostener altas expectativas y fomentar su autonomía; registrar avances."
+        ],
+        "normativa": [
+          "Ofrecer ajustes razonables y formas alternativas de demostrar lo aprendido."
+        ]
+      }
+    },
+    {
+      "id": "visual",
+      "name": "Discapacidad visual",
+      "fams": [
+        "infraestructura",
+        "pedagogica"
+      ],
+      "ex": {
+        "infraestructura": [
+          "Material solo en letra pequeña, sin macrotipo, audio ni braille.",
+          "Iluminación insuficiente para su resto visual.",
+          "Está lejos del pizarrón y no alcanza a ver."
+        ],
+        "pedagogica": [
+          "Se dan instrucciones señalando \"esto/aquí\" sin describirlas en voz alta.",
+          "No hay versiones accesibles de los materiales."
+        ]
+      },
+      "routes": {
+        "infraestructura": [
+          "Ubicarlo donde aproveche su resto visual y con buena luz."
+        ],
+        "pedagogica": [
+          "Ofrecer material en macrotipo, audio o braille y describir en voz alta lo que se escribe."
+        ]
+      }
+    },
+    {
+      "id": "auditiva",
+      "name": "Discapacidad auditiva",
+      "fams": [
+        "infraestructura",
+        "pedagogica",
+        "cultural"
+      ],
+      "ex": {
+        "infraestructura": [
+          "Aula ruidosa que dificulta escuchar.",
+          "Está lejos o no ve la cara de quien habla."
+        ],
+        "pedagogica": [
+          "Se habla de espaldas o sin apoyos visuales.",
+          "No hay subtítulos ni intérprete cuando se requiere."
+        ],
+        "cultural": [
+          "No se considera la Lengua de Señas como parte de la comunicación."
+        ]
+      },
+      "routes": {
+        "infraestructura": [
+          "Reducir ruido y ubicarlo para ver el rostro y los labios."
+        ],
+        "pedagogica": [
+          "Hablar de frente, con apoyos visuales y textos de apoyo."
+        ],
+        "cultural": [
+          "Valorar y usar la Lengua de Señas cuando corresponda."
+        ]
+      }
+    },
+    {
+      "id": "motriz",
+      "name": "Discapacidad motriz",
+      "fams": [
+        "infraestructura",
+        "normativa"
+      ],
+      "ex": {
+        "infraestructura": [
+          "Ausencia de rampas o mobiliario que no puede usar.",
+          "Espacios estrechos que impiden su desplazamiento autónomo."
+        ],
+        "normativa": [
+          "Actividades que asumen que todos se mueven o escriben igual."
+        ]
+      },
+      "routes": {
+        "infraestructura": [
+          "Adecuar accesos, mobiliario y ubicación para su autonomía."
+        ],
+        "normativa": [
+          "Ofrecer formas alternativas de participar y responder."
+        ]
+      }
+    },
+    {
+      "id": "lenguaje",
+      "name": "Lenguaje / comunicación",
+      "fams": [
+        "cultural",
+        "pedagogica",
+        "actitudinal"
+      ],
+      "ex": {
+        "cultural": [
+          "No se usan apoyos visuales ni comunicación alternativa."
+        ],
+        "pedagogica": [
+          "Se depende solo del lenguaje oral para explicar y evaluar."
+        ],
+        "actitudinal": [
+          "Se interpreta su silencio como que \"no sabe\" o \"no quiere\"."
+        ]
+      },
+      "routes": {
+        "pedagogica": [
+          "Incorporar apoyos visuales y sistemas de comunicación alternativa."
+        ],
+        "cultural": [
+          "Dar más tiempo y vías no verbales para participar."
+        ]
+      }
+    },
+    {
+      "id": "cast",
+      "name": "Aptitudes sobresalientes",
+      "fams": [
+        "pedagogica",
+        "actitudinal",
+        "normativa"
+      ],
+      "ex": {
+        "pedagogica": [
+          "Se le da lo mismo que al grupo, sin enriquecimiento ni reto.",
+          "Termina rápido y se aburre, sin nuevas propuestas."
+        ],
+        "actitudinal": [
+          "Se le frena para \"no adelantarse\" o se le encarga cuidar a otros."
+        ],
+        "normativa": [
+          "La organización no le permite avanzar a su ritmo."
+        ]
+      },
+      "routes": {
+        "pedagogica": [
+          "Enriquecer y profundizar con retos y proyectos."
+        ],
+        "actitudinal": [
+          "Reconocer y potenciar sus aptitudes sin sobrecargarlo."
+        ]
+      }
+    },
+    {
+      "id": "otra",
+      "name": "Otra",
+      "fams": [],
+      "ex": {},
+      "routes": {}
+    },
+    {
+      "id": "nose",
+      "name": "No estoy seguro",
+      "fams": [],
+      "ex": {},
+      "routes": {}
+    }
+  ],
+  "rules": {
+    "candidateWhenYesAtLeast": 1,
+    "highPriorityWhen": {
+      "systemicContextsAtLeast": 2,
+      "familySemaforo": "red",
+      "yesAnswersAtLeast": 2
+    },
+    "systemicLabel": "BAPyC sistémica",
+    "requiresHumanReview": true,
+    "notCountedForBarrier": [
+      "no",
+      "idk"
+    ],
+    "pendingReviewWhen": "idk"
+  },
+  "resultLanguage": {
+    "candidateTemplate": "Se identifica una posible barrera {sing}",
+    "systemicNote": "Barrera sistémica · aparece en {n} contextos",
+    "noDiagnosisDisclaimer": "Resultado orientativo — no diagnostica al estudiante. Identifica barreras del contexto y requiere revisión con el colectivo escolar y la UDEI."
+  },
+  "families": [
+    {
+      "id": "act",
+      "key": "actitudinal",
+      "name": "Actitudinales",
+      "sing": "actitudinal",
+      "sub": "Prejuicios, rechazo, sobreprotección, bajas expectativas.",
+      "evidenceChips": [
+        "Comentarios registrados",
+        "Reporte docente",
+        "Acuerdos de CTE",
+        "Situación de exclusión"
+      ],
+      "routes": [
+        "Promover altas expectativas de logro para todo el alumnado.",
+        "Impulsar círculos de diálogo y acuerdos de convivencia."
+      ],
+      "questions": [
+        {
+          "id": "act-01",
+          "text": "Se usan etiquetas o comentarios que reducen las expectativas sobre ciertos estudiantes.",
+          "help": {
+            "expl": "Fíjate en comentarios o etiquetas que anticipan que alguien \"no podrá\", antes de darle la oportunidad.",
+            "ex": [
+              "Decir \"este grupo no da para más\".",
+              "Llamar a un alumno \"el flojito\" o \"el lento\".",
+              "Dar por hecho que no entenderá y no explicarle."
+            ]
+          },
+          "strategy": "Sensibilizar al colectivo docente y sostener altas expectativas para todo el alumnado."
+        },
+        {
+          "id": "act-02",
+          "text": "Algunos estudiantes quedan fuera de actividades por decisiones de adultos o pares.",
+          "help": {
+            "expl": "Observa si alguien queda fuera de actividades por decisión de adultos o de sus compañeros.",
+            "ex": [
+              "No se le invita al festival o al equipo.",
+              "Se le deja fuera de una salida \"por seguridad\".",
+              "Los compañeros no lo integran y nadie interviene."
+            ]
+          },
+          "strategy": "Garantizar la participación de todos en las actividades, con los apoyos necesarios."
+        },
+        {
+          "id": "act-03",
+          "text": "Se espera menos de algunos estudiantes antes de ofrecer apoyos o ajustes.",
+          "help": {
+            "expl": "Nota si se le exige o espera menos a alguien sin antes intentar apoyos o ajustes.",
+            "ex": [
+              "Se le deja copiar en vez de enseñarle.",
+              "Se le asigna menos trabajo \"para no presionarlo\".",
+              "Se asume que no llegará al nivel del grupo."
+            ]
+          },
+          "strategy": "Ofrecer apoyos y ajustes razonables antes de reducir lo que se espera del alumno."
+        },
+        {
+          "id": "act-04",
+          "text": "Se sobreprotege a algún estudiante y se limita su autonomía.",
+          "help": {
+            "expl": "Observa si \"ayudar de más\" impide que la persona haga lo que sí puede.",
+            "ex": [
+              "Hacerle el trabajo en vez de guiarlo.",
+              "No dejarle participar \"para que no se canse\".",
+              "Resolver por él lo que puede intentar solo."
+            ]
+          },
+          "strategy": "Fomentar la autonomía: acompañar con apoyos, no hacer las cosas por el alumno."
+        },
+        {
+          "id": "act-05",
+          "text": "Se trata distinto a un estudiante por su apariencia, origen, género o condición.",
+          "help": {
+            "expl": "Fíjate en trato desigual por características personales, origen o discapacidad.",
+            "ex": [
+              "Burlas o apodos tolerados.",
+              "Trato de castigo o señalamiento por su condición.",
+              "Se le exhibe frente al grupo."
+            ]
+          },
+          "strategy": "Acordar y modelar un trato equitativo; intervenir ante burlas o señalamientos."
+        },
+        {
+          "id": "act-06",
+          "text": "Hay agresiones o rechazo entre pares que los adultos no atienden.",
+          "help": {
+            "expl": "Observa si el maltrato entre compañeros ocurre sin que un adulto intervenga.",
+            "ex": [
+              "Molestan a un alumno y nadie lo detiene.",
+              "Se normaliza \"así se llevan\".",
+              "No hay seguimiento tras un conflicto."
+            ]
+          },
+          "strategy": "Establecer acuerdos de convivencia e intervenir siempre ante el maltrato entre pares."
+        },
+        {
+          "id": "act-07",
+          "text": "Se condiciona la inscripción o permanencia, o se asume que \"le corresponde a educación especial\".",
+          "help": {
+            "expl": "Nota si se pone en duda el derecho del alumno a estar y aprender en el grupo.",
+            "ex": [
+              "Sugerir que \"estaría mejor en un CAM\".",
+              "Condicionar la inscripción a un diagnóstico.",
+              "Verlo como \"alumno de USAER\", no del grupo."
+            ]
+          },
+          "strategy": "Asegurar el derecho a estar y aprender en el grupo; no condicionar la permanencia."
+        }
+      ]
+    },
+    {
+      "id": "cul",
+      "key": "cultural",
+      "name": "Culturales",
+      "sing": "cultural",
+      "sub": "Enfoque homogéneo, no reconoce la diversidad.",
+      "evidenceChips": [
+        "Materiales del aula",
+        "Fotografía de murales",
+        "Entrevista con familia",
+        "Observación"
+      ],
+      "routes": [
+        "Incorporar referentes culturales y lingüísticos del grupo en la planeación.",
+        "Enriquecer los materiales para que reflejen la diversidad real."
+      ],
+      "questions": [
+        {
+          "id": "cul-01",
+          "text": "La planeación no incorpora referentes culturales, lingüísticos o familiares del grupo.",
+          "help": {
+            "expl": "Revisa si lo que se enseña conecta con la cultura, la lengua y el contexto de las familias del grupo.",
+            "ex": [
+              "Ejemplos ajenos a la comunidad.",
+              "No se retoma la lengua materna de algún alumno.",
+              "Se ignoran fechas o tradiciones locales."
+            ]
+          },
+          "strategy": "Incorporar referentes culturales y lingüísticos del grupo en la planeación."
+        },
+        {
+          "id": "cul-02",
+          "text": "Los materiales del aula no reflejan la diversidad real o reproducen estereotipos.",
+          "help": {
+            "expl": "Mira si carteles, libros y materiales representan a todo el alumnado, sin estereotipos.",
+            "ex": [
+              "Imágenes de un solo tipo de familia.",
+              "Roles de género fijos en los materiales.",
+              "Nadie con discapacidad aparece representado."
+            ]
+          },
+          "strategy": "Enriquecer los materiales para que reflejen la diversidad real, sin estereotipos."
+        },
+        {
+          "id": "cul-03",
+          "text": "Los avisos y reuniones con familias usan lenguaje que algunas no comprenden.",
+          "help": {
+            "expl": "Observa si la comunicación con las familias es entendible para todas.",
+            "ex": [
+              "Circulares con lenguaje técnico.",
+              "Avisos solo por un medio (p. ej. solo digital).",
+              "Reuniones sin traducción ni apoyo."
+            ]
+          },
+          "strategy": "Comunicar con las familias en lenguaje claro y por varios medios."
+        },
+        {
+          "id": "cul-04",
+          "text": "Las ceremonias, festivales o normas del plantel asumen un solo modelo cultural o de familia.",
+          "help": {
+            "expl": "Fíjate si las actividades escolares reconocen la diversidad cultural, de género y de familia.",
+            "ex": [
+              "Festejos de un solo tipo de familia.",
+              "Reglas de apariencia que ignoran prácticas culturales.",
+              "Se excluye a quien no participa por su cultura o credo."
+            ]
+          },
+          "strategy": "Revisar actividades y normas para reconocer la diversidad cultural, de género y de familia."
+        },
+        {
+          "id": "cul-05",
+          "text": "No se ofrece apoyo a estudiantes cuya lengua materna no es el español.",
+          "help": {
+            "expl": "Observa si hay apoyos para quien habla otra lengua.",
+            "ex": [
+              "Sin materiales en su lengua.",
+              "No se aprovecha a intérpretes o a la familia.",
+              "Se interpreta el silencio como \"no sabe\"."
+            ]
+          },
+          "strategy": "Ofrecer apoyos para quien habla otra lengua (materiales, intérprete, más tiempo)."
+        }
+      ]
+    },
+    {
+      "id": "ped",
+      "key": "pedagogica",
+      "name": "Pedagógicas",
+      "sing": "pedagógica",
+      "sub": "Planeación, evaluación y métodos rígidos, sin DUA.",
+      "evidenceChips": [
+        "Planeación didáctica",
+        "Observación de clase",
+        "Instrumento de evaluación",
+        "Fotografía"
+      ],
+      "routes": [
+        "Diseñar con DUA: andamiajes, apoyos visuales y material manipulable.",
+        "Diversificar la evaluación acorde al nivel de conceptualización."
+      ],
+      "questions": [
+        {
+          "id": "ped-01",
+          "text": "La mayoría de las actividades se realizan de una sola manera para todo el grupo.",
+          "help": {
+            "expl": "Fíjate si hay una sola forma de trabajar o varias opciones según el alumnado.",
+            "ex": [
+              "Solo copiar del pizarrón.",
+              "La misma tarea idéntica para todos.",
+              "No hay opción de resolverlo de otro modo."
+            ]
+          },
+          "strategy": "Diversificar las actividades y las formas de trabajo con enfoque DUA."
+        },
+        {
+          "id": "ped-02",
+          "text": "La clase se basa en explicación oral y ejercicios repetitivos, con pocas alternativas.",
+          "help": {
+            "expl": "Observa si la enseñanza va más allá de hablar y repetir.",
+            "ex": [
+              "Clase 100% expositiva.",
+              "Planas y ejercicios mecánicos.",
+              "Sin juegos, proyectos ni material concreto."
+            ]
+          },
+          "strategy": "Variar los métodos: proyectos, material concreto y apoyos visuales."
+        },
+        {
+          "id": "ped-03",
+          "text": "Cuando un estudiante requiere apoyo, no se ofrecen andamiajes ni apoyos visuales.",
+          "help": {
+            "expl": "Nota si hay apoyos concretos cuando un estudiante se atora.",
+            "ex": [
+              "No hay imágenes, esquemas ni ejemplos.",
+              "No se usa material manipulable ni tecnología.",
+              "Se repite igual en vez de apoyar distinto."
+            ]
+          },
+          "strategy": "Ofrecer andamiajes, apoyos visuales y material manipulable cuando se requiera."
+        },
+        {
+          "id": "ped-04",
+          "text": "La evaluación se basa en un solo instrumento y no reconoce procesos ni avances.",
+          "help": {
+            "expl": "Observa si la calificación depende de una sola forma de demostrar lo aprendido.",
+            "ex": [
+              "Un solo examen escrito decide todo.",
+              "No cuentan los avances ni el esfuerzo.",
+              "No se permite mostrar lo aprendido de otra forma."
+            ]
+          },
+          "strategy": "Diversificar la evaluación y reconocer procesos y avances, no solo el examen."
+        },
+        {
+          "id": "ped-05",
+          "text": "No se recuperan conocimientos previos ni experiencias de la vida diaria.",
+          "help": {
+            "expl": "Fíjate si lo nuevo se conecta con lo que el alumno ya sabe y vive.",
+            "ex": [
+              "Se inicia sin explorar qué saben.",
+              "Ejemplos alejados de su vida.",
+              "No se liga el tema con la comunidad."
+            ]
+          },
+          "strategy": "Partir de los conocimientos previos y ligar el contenido con su vida y comunidad."
+        },
+        {
+          "id": "ped-06",
+          "text": "No se definen ni registran ajustes razonables para quien los necesita.",
+          "help": {
+            "expl": "Revisa si hay ajustes acordados y con seguimiento.",
+            "ex": [
+              "No hay tiempo extra ni cambios de formato.",
+              "Se acuerda un apoyo pero no se aplica.",
+              "No queda registro del ajuste."
+            ]
+          },
+          "strategy": "Definir, aplicar y registrar los ajustes razonables con seguimiento."
+        },
+        {
+          "id": "ped-07",
+          "text": "No se ofrece retroalimentación que ayude a mejorar.",
+          "help": {
+            "expl": "Nota si el alumno sabe qué hizo bien y cómo mejorar.",
+            "ex": [
+              "Solo se marca bien/mal.",
+              "No se explica el error.",
+              "No hay oportunidad de corregir."
+            ]
+          },
+          "strategy": "Dar retroalimentación formativa que indique qué mejorar y permitir corregir."
+        }
+      ]
+    },
+    {
+      "id": "fis",
+      "key": "infraestructura",
+      "name": "Físicas",
+      "sing": "física",
+      "sub": "Acceso, mobiliario y espacios sin diseño universal.",
+      "evidenceChips": [
+        "Fotografía del espacio",
+        "Recorrido del plantel",
+        "Reporte de mantenimiento",
+        "Croquis"
+      ],
+      "routes": [
+        "Adecuar el mobiliario y las rutas de circulación para el acceso.",
+        "Realizar un recorrido de accesibilidad con el colectivo.",
+        "Gestionar apoyos con CEPS/APF u otras instituciones para mejorar infraestructura y equipamiento."
+      ],
+      "questions": [
+        {
+          "id": "fis-01",
+          "text": "El plantel presenta barreras para entrar, desplazarse o llegar a aulas y sanitarios.",
+          "help": {
+            "expl": "Revisa el acceso y el desplazamiento por la escuela hasta los espacios de uso común.",
+            "ex": [
+              "Escalón en la entrada sin rampa.",
+              "Pasillos o puertas muy estrechos.",
+              "El sanitario accesible está cerrado o lejos."
+            ]
+          },
+          "strategy": "Realizar un recorrido de accesibilidad y priorizar los ajustes de acceso."
+        },
+        {
+          "id": "fis-02",
+          "text": "Rampas inexistentes o inadecuadas, escaleras sin apoyo, pisos inseguros u obstáculos.",
+          "help": {
+            "expl": "Fíjate en rampas, escaleras, pisos y obstáculos que dificultan el paso seguro.",
+            "ex": [
+              "Rampa muy inclinada o resbalosa.",
+              "Escaleras sin barandal.",
+              "Cables u objetos en el paso."
+            ]
+          },
+          "strategy": "Adecuar rampas, barandales y pisos para una circulación segura."
+        },
+        {
+          "id": "fis-03",
+          "text": "El mobiliario o los espacios dificultan movilidad, visión, escucha o participación.",
+          "help": {
+            "expl": "Observa si el mobiliario y la disposición del aula permiten ver, oír y moverse.",
+            "ex": [
+              "Bancas fijas que impiden circular.",
+              "Alumno de espaldas al pizarrón.",
+              "Aula ruidosa o con poca luz."
+            ]
+          },
+          "strategy": "Adecuar el mobiliario y la distribución del aula para ver, oír y participar."
+        },
+        {
+          "id": "fis-04",
+          "text": "Sanitarios, bebederos o áreas comunes que no todos pueden usar.",
+          "help": {
+            "expl": "Observa si baños, bebederos y patios son accesibles y utilizables por todos.",
+            "ex": [
+              "Sanitario accesible cerrado o lejano.",
+              "Bebedero a una altura inalcanzable.",
+              "Patio sin ruta accesible."
+            ]
+          },
+          "strategy": "Hacer usables los sanitarios, bebederos y áreas comunes para todos."
+        },
+        {
+          "id": "fis-05",
+          "text": "Señalización ausente o inaccesible: Braille, pictogramas, contraste o apoyos visuales.",
+          "help": {
+            "expl": "Revisa si la información y las rutas están señalizadas para todos.",
+            "ex": [
+              "Sin indicaciones en Braille.",
+              "Sin pictogramas ni apoyos visuales.",
+              "Avisos solo escritos o solo sonoros."
+            ]
+          },
+          "strategy": "Colocar señalización accesible (Braille, pictogramas, contraste, apoyos visuales)."
+        },
+        {
+          "id": "fis-06",
+          "text": "Ruido, iluminación o ventilación del aula inadecuados para trabajar.",
+          "help": {
+            "expl": "Nota si el ambiente físico permite concentrarse y participar con comodidad.",
+            "ex": [
+              "Aula ruidosa junto al patio.",
+              "Poca luz o reflejos en el pizarrón.",
+              "Aula calurosa o mal ventilada."
+            ]
+          },
+          "strategy": "Mejorar el ruido, la iluminación y la ventilación del aula."
+        },
+        {
+          "id": "fis-07",
+          "text": "Faltan materiales o tecnología accesibles para el aprendizaje.",
+          "help": {
+            "expl": "Fíjate si hay materiales concretos y tecnología disponibles y usables.",
+            "ex": [
+              "Sin material manipulable ni apoyos visuales.",
+              "Sin recursos tecnológicos en el aula.",
+              "Materiales insuficientes para el grupo."
+            ]
+          },
+          "strategy": "Gestionar materiales y tecnología accesibles para el aprendizaje."
+        },
+        {
+          "id": "fis-08",
+          "text": "El traslado entre la casa y la escuela es difícil o inseguro.",
+          "help": {
+            "expl": "Considera la distancia, el transporte y la seguridad del trayecto.",
+            "ex": [
+              "Sin transporte accesible en la ruta.",
+              "Trayecto largo o inseguro.",
+              "El costo del traslado limita la asistencia."
+            ]
+          },
+          "strategy": "Coordinar con la familia y la comunidad un traslado seguro y accesible."
+        }
+      ]
+    },
+    {
+      "id": "nor",
+      "key": "normativa",
+      "name": "Normativas",
+      "sing": "normativa",
+      "sub": "Reglas y criterios que excluyen o no flexibilizan.",
+      "evidenceChips": [
+        "Reglamento escolar",
+        "Acuerdos de CTE",
+        "Criterios de evaluación",
+        "Acta"
+      ],
+      "routes": [
+        "Flexibilizar reglamento y criterios, con enfoque formativo y restaurativo.",
+        "Establecer una ruta clara para solicitar y dar seguimiento a ajustes razonables."
+      ],
+      "questions": [
+        {
+          "id": "nor-01",
+          "text": "El reglamento aplica sanciones que excluyen en lugar de formar o reparar.",
+          "help": {
+            "expl": "Mira si las sanciones sacan al alumno del aprendizaje en vez de repararlo.",
+            "ex": [
+              "Suspender por conducta sin ningún apoyo.",
+              "Dejar sin recreo de forma habitual.",
+              "Sacar de clase en lugar de dialogar."
+            ]
+          },
+          "strategy": "Revisar el reglamento con enfoque formativo y restaurativo."
+        },
+        {
+          "id": "nor-02",
+          "text": "La evaluación prioriza la calificación estándar sobre avances, procesos y apoyos.",
+          "help": {
+            "expl": "Observa si la evaluación reconoce avances y procesos, no solo el número.",
+            "ex": [
+              "Un solo examen decide todo.",
+              "No se consideran ajustes en la calificación.",
+              "No cuenta el esfuerzo ni el progreso."
+            ]
+          },
+          "strategy": "Diversificar la evaluación y reconocer procesos y avances."
+        },
+        {
+          "id": "nor-03",
+          "text": "No hay acuerdos claros para solicitar y dar seguimiento a ajustes razonables.",
+          "help": {
+            "expl": "Revisa si existe una ruta clara para pedir y dar seguimiento a ajustes razonables.",
+            "ex": [
+              "Nadie sabe a quién pedir un ajuste.",
+              "Se acuerda un apoyo pero no se le da seguimiento.",
+              "No queda registro en el CTE."
+            ]
+          },
+          "strategy": "Establecer una ruta clara para solicitar y dar seguimiento a ajustes razonables."
+        },
+        {
+          "id": "nor-04",
+          "text": "Las reglas de asistencia o puntualidad no consideran situaciones especiales.",
+          "help": {
+            "expl": "Fíjate si la norma castiga situaciones fuera del control del alumno o la familia.",
+            "ex": [
+              "Falta por traslado o salud sin justificación posible.",
+              "Puerta cerrada tras la hora, sin opción.",
+              "Se pierde el derecho a evaluación por faltas justificadas."
+            ]
+          },
+          "strategy": "Flexibilizar asistencia y puntualidad ante situaciones justificadas."
+        },
+        {
+          "id": "nor-05",
+          "text": "Las normas se definen sin la participación de familias y alumnado.",
+          "help": {
+            "expl": "Observa si quienes cumplen las reglas participaron en construirlas.",
+            "ex": [
+              "Reglamento impuesto sin consulta.",
+              "No hay acuerdos de aula construidos con el grupo.",
+              "Las familias no conocen ni opinan sobre las normas."
+            ]
+          },
+          "strategy": "Construir las normas con la participación de familias y alumnado."
+        },
+        {
+          "id": "nor-06",
+          "text": "Los criterios de acreditación o promoción no contemplan ajustes razonables.",
+          "help": {
+            "expl": "Revisa si aprobar depende de criterios únicos sin alternativas.",
+            "ex": [
+              "Mismo criterio de promoción para todos sin ajuste.",
+              "No hay ruta para acreditar con apoyos.",
+              "Se condiciona la promoción a un diagnóstico."
+            ]
+          },
+          "strategy": "Contemplar ajustes razonables en los criterios de acreditación y promoción."
+        },
+        {
+          "id": "nor-07",
+          "text": "Se prioriza lo administrativo sobre las necesidades de aprendizaje.",
+          "help": {
+            "expl": "Nota si trámites y horarios se anteponen a la enseñanza.",
+            "ex": [
+              "Tiempo de clase perdido en trámites.",
+              "Horarios rígidos que impiden apoyos.",
+              "Decisiones por conveniencia administrativa, no del alumno."
+            ]
+          },
+          "strategy": "Priorizar las necesidades de aprendizaje sobre lo administrativo."
+        }
+      ]
+    }
+  ]
+}

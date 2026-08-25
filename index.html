@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+  <meta name="theme-color" content="#126E66">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BAPyC">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="./styles.css">
+  <title>BAPyC · Diagnóstico</title>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ══════════ VIEW · INICIO ══════════ -->
+  <section class="view active" data-view="inicio">
+    <div class="body" style="padding-top:calc(env(safe-area-inset-top) + 20px)">
+      <div class="home-hero">
+        <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <h1>Barreras para el Aprendizaje, la Participación y la Convivencia</h1>
+        <p>Asistente para identificar de forma orientativa las BAPyC del contexto y obtener estrategias de intervención. Funciona sin internet.</p>
+      </div>
+      <div class="home-list">
+        <button class="home-item" id="homeStart">
+          <div class="hic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg></div>
+          <div><div class="ht">Iniciar evaluación</div><div class="hs">Alcance → semáforo → tarjetas → resultados</div></div>
+          <svg class="harrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="home-item" id="homeFund">
+          <div class="hic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+          <div><div class="ht">Fundamentos teóricos</div><div class="hs">Marco conceptual, legal e institucional</div></div>
+          <svg class="harrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <button class="home-item" id="homeAbout">
+          <div class="hic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v4h1"/></svg></div>
+          <div><div class="ht">Acerca de</div><div class="hs">Versión, autoría y contacto</div></div>
+          <svg class="harrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW · FUNDAMENTOS ══════════ -->
+  <section class="view" data-view="fundamentos">
+    <div class="appbar">
+      <div class="back" id="backFund">‹</div>
+      <div class="titles"><span class="kicker">Referencia</span><h2>Fundamentos teóricos</h2></div>
+    </div>
+    <div class="body" id="fundBody"></div>
+  </section>
+
+  <!-- ══════════ VIEW · ACERCA DE ══════════ -->
+  <section class="view" data-view="acerca">
+    <div class="appbar">
+      <div class="back" id="backAbout">‹</div>
+      <div class="titles"><span class="kicker">Información</span><h2>Acerca de</h2></div>
+    </div>
+    <div class="body">
+      <div class="about-card">
+        <div class="about-row"><span class="al">Aplicación</span><span class="av">BAPyC · Diagnóstico</span></div>
+        <div class="about-row"><span class="al">Versión</span><span class="av">PWA 1.0</span></div>
+        <div class="about-row"><span class="al">Desarrollador</span><span class="av">José A. Lara C.</span></div>
+        <div class="about-row"><span class="al">Organización</span><span class="av">ARTHYON</span></div>
+        <div class="about-row"><span class="al">Contacto</span><span class="av">arthyonapps@gmail.com</span></div>
+      </div>
+      <p class="about-copy">© 2026 ARTHYON · José A. Lara C.<br>Todos los derechos reservados.</p>
+      <p class="about-copy" style="color:var(--ink2)">Resultado orientativo: no diagnostica al estudiante. Identifica barreras del contexto y requiere revisión con el colectivo escolar y la UDEI.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW 0 · ALCANCE ══════════ -->
+  <section class="view" data-view="scope">
+    <div class="appbar">
+      <div class="back" id="backToInicio">‹</div>
+      <div class="titles">
+        <span class="kicker">Antes de empezar</span>
+        <h2>¿Sobre quién es la valoración?</h2>
+      </div>
+    </div>
+    <div class="body">
+      <p class="lead">Elige el alcance. En todos los casos, cada barrera se ubica en el <b>contexto donde se genera</b> (aula, escuela o familia) — el alcance solo define a quién acompañas.</p>
+      <div id="scopeList"></div>
+      <div class="scope-ref" id="scopeRef" style="display:none">
+        <label id="scopeRefLbl">Identificador</label>
+        <input id="scopeRefInput" type="text" maxlength="24" placeholder="Iniciales o código" autocomplete="off">
+        <div class="priv">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>
+          Usa un nombre o alias (no el nombre completo real). No registres datos sensibles.
+        </div>
+      </div>
+      <div class="scope-cond" id="scopeCond" style="display:none">
+        <div class="sheet-lbl" id="condLbl">¿Enfrenta alguna condición? (opcional)</div>
+        <button class="cond-select" id="condSelect" type="button">
+          <span id="condSelectText" class="ph">Selecciona una condición…</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="cond-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>
+          Sirve para hacer visibles barreras del contexto que a veces no se notan. El resultado siempre se atribuye al contexto, nunca al alumno.
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="cta" id="toSemaforo" disabled>Continuar <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <p class="foot-note" id="scopeNote">Elige un alcance para continuar</p>
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW 1 · SEMÁFORO ══════════ -->
+  <section class="view" data-view="semaforo">
+    <div class="appbar">
+      <div class="back" id="backScope">‹</div>
+      <div class="titles">
+        <span class="kicker">Paso 1 de 4 · 30 segundos</span>
+        <h2>¿Dónde vale la pena mirar?</h2>
+      </div>
+    </div>
+    <div class="body">
+      <div id="scopeBadgeWrap"></div>
+      <div id="condNote"></div>
+      <p class="lead">Piensa en las barreras que el alumnado enfrenta y marca con el semáforo cómo ves cada familia. <b>Solo profundizarás en las que marques 🟡 o 🔴.</b></p>
+      <div id="famList"></div>
+      <button class="ev-cam" id="addBarBtn" style="margin-top:2px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        ¿No encuentras la barrera? Agrégala
+      </button>
+    </div>
+    <div class="foot">
+      <button class="cta" id="toSwipe" disabled>Explorar barreras señaladas <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <p class="foot-note" id="semNote">Marca al menos una familia para continuar</p>
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW 2 · SWIPE ══════════ -->
+  <section class="view" data-view="swipe">
+    <div class="appbar">
+      <div class="back" id="backSem">‹</div>
+      <div class="titles">
+        <span class="kicker" id="swKicker">Paso 2 de 4 · Explorar</span>
+        <h2 id="swTitle">Explorar situaciones</h2>
+      </div>
+    </div>
+    <div class="body" style="overflow:hidden">
+      <div class="deck-head">
+        <div class="deck-fam" id="deckFam"></div>
+        <div class="deck-count" id="deckCount"></div>
+      </div>
+      <div class="progress"><i id="swBar" style="width:0%"></i></div>
+      <div class="deck" id="deck"></div>
+      <div class="sw-actions">
+        <button class="sw-btn no" id="btnNo" aria-label="No lo veo">✕</button>
+        <button class="sw-btn idk" id="btnIdk" aria-label="No sé">?</button>
+        <button class="sw-btn yes" id="btnYes" aria-label="Sí lo veo">✓</button>
+      </div>
+      <div class="sw-legend"><span>No lo veo</span><span>No sé</span><span>Sí lo veo</span></div>
+      <button class="ev-cam" id="prevCardBtn" style="margin-top:14px;display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4"/><path d="M5 10h11a4 4 0 010 8h-1"/></svg>
+        Regresar a pregunta anterior
+      </button>
+    </div>
+
+    <!-- context picker -->
+    <div class="ctxscrim" id="ctxScrim"></div>
+    <div class="ctxsheet" id="ctxSheet">
+      <h3>¿En qué contexto se genera?</h3>
+      <p>La barrera se genera en el contexto, no en el alumno. Marca todos los contextos donde el alumnado la enfrenta — en 2 o más se vuelve <b>sistémica</b>.</p>
+      <div class="ctx-opts" id="ctxOpts"></div>
+      <div style="display:flex;gap:10px;align-items:stretch">
+        <button class="cta ghost" id="ctxCancel" style="flex:0 0 54px;width:54px;padding:0" aria-label="Atrás">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="cta" id="ctxConfirm" style="flex:1">Confirmar</button>
+      </div>
+    </div>
+
+    <!-- hoja de ayuda -->
+    <div class="ctxscrim" id="helpScrim"></div>
+    <div class="ctxsheet" id="helpSheet">
+      <h3>¿Qué observar?</h3>
+      <div class="help-fam" id="helpFam"></div>
+      <div class="help-q" id="helpQ"></div>
+      <p id="helpExpl"></p>
+      <div class="sheet-lbl" id="helpExLbl">Ejemplos</div>
+      <ul class="help-ex" id="helpEx"></ul>
+      <div style="display:flex;gap:9px">
+        <button class="cta2 solid" data-a="yes" style="flex:1">Sí lo veo</button>
+        <button class="cta2" data-a="no" style="flex:1">No lo veo</button>
+      </div>
+      <button class="cta2 ghost2" data-a="idk" style="margin-top:9px;width:100%">Aún no lo sé</button>
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW 3 · EVIDENCIA ══════════ -->
+  <section class="view" data-view="evidencia">
+    <div class="appbar">
+      <div class="back" id="backSwipe">‹</div>
+      <div class="titles">
+        <span class="kicker">Paso 3 de 4 · Evidencia</span>
+        <h2>Respalda lo que viste</h2>
+      </div>
+    </div>
+    <div class="body">
+      <p class="lead">Solo para las barreras presentes en el contexto. <b>Toca la evidencia observable — sin teclear.</b></p>
+      <div id="evList"></div>
+    </div>
+    <div class="foot">
+      <button class="cta" id="toResults">Ver resultados <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+  </section>
+
+  <!-- ══════════ VIEW 4 · RESULTADOS ══════════ -->
+  <section class="view" data-view="resultados">
+    <div class="appbar">
+      <div class="titles">
+        <span class="kicker">Paso 4 de 4 · Resultados</span>
+        <h2>Barreras identificadas</h2>
+      </div>
+    </div>
+    <div class="body" id="resBody"></div>
+    <div class="foot">
+      <div class="res-actions">
+        <button class="cta2" id="copyBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg>
+          Copiar reporte
+        </button>
+        <button class="cta2 solid" id="shareBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+          Compartir
+        </button>
+        <button class="cta2 ghost2" id="printBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+          Imprimir / PDF
+        </button>
+        <button class="cta2 ghost2" id="newBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nueva evaluación
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hoja: selector de condición -->
+  <div class="ctxscrim" id="condScrim"></div>
+  <div class="ctxsheet" id="condSheet">
+    <h3>¿Enfrenta alguna condición?</h3>
+    <p>Elige una para hacer más específica la valoración. El resultado siempre se atribuye al <b>contexto</b>, nunca al alumno.</p>
+    <div class="ctx-opts" id="condOptList" style="max-height:340px"></div>
+  </div>
+
+  <!-- Hoja: agregar barrera (salida de escape) -->
+  <div class="ctxscrim" id="barScrim"></div>
+  <div class="ctxsheet" id="barSheet">
+    <h3>Agregar una barrera</h3>
+    <p>¿La barrera que buscas no está en el cuestionario? Descríbela. Se marcará <b>para revisión con la UDEI</b>.</p>
+    <textarea class="sheet-txt" id="barDesc" maxlength="240" placeholder="Describe la barrera del contexto y a quién afecta…"></textarea>
+    <div class="sheet-lbl">Familia (opcional)</div>
+    <div class="chip-row" id="barFamOpts"></div>
+    <div class="sheet-lbl">¿En qué contexto se genera?</div>
+    <div class="ctx-opts" id="barCtxOpts"></div>
+    <button class="cta" id="barConfirm" disabled>Agregar barrera</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
