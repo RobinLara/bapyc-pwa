@@ -16,6 +16,12 @@ const KEY = "bapyc:feedback";
 const MAX_ITEMS = 5000;
 const CATEGORIES = ["error", "sugerencia", "contenido", "otro"];
 
+// Rate-limiting de envíos (POST): máx RL_MAX por IP en una ventana de RL_WINDOW s.
+// Generoso para uso legítimo (varios docentes tras un mismo IP de escuela),
+// restrictivo para bots que quieran llenar el almacén. Ajusta a gusto.
+const RL_WINDOW = 600; // 10 minutos
+const RL_MAX = 20;     // 20 envíos por IP cada 10 min
+
 const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "";
 const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
 
@@ -30,6 +36,26 @@ async function redis(command) {
 }
 
 const clip = (s, n) => (typeof s === "string" ? s.slice(0, n) : "");
+
+function clientIp(req) {
+  const xff = req.headers["x-forwarded-for"] || "";
+  const first = String(xff).split(",")[0].trim();
+  return first || req.headers["x-real-ip"] || "unknown";
+}
+
+// Devuelve true si la IP superó el límite. Fail-open: si el almacén falla,
+// NO bloquea (mejor dejar pasar que perder comentarios legítimos).
+async function rateLimited(req) {
+  try {
+    const key = `bapyc:rl:${clientIp(req)}`;
+    const r = await redis(["INCR", key]);
+    const n = Number(r.result);
+    if (n === 1) await redis(["EXPIRE", key, String(RL_WINDOW)]);
+    return n > RL_MAX;
+  } catch {
+    return false;
+  }
+}
 
 function sanitizeContext(c) {
   c = c && typeof c === "object" ? c : {};
@@ -52,6 +78,10 @@ module.exports = async function handler(req, res) {
 
   // ── Guardar comentario ──────────────────────────────────────────────────
   if (req.method === "POST") {
+    if (await rateLimited(req)) {
+      return res.status(429).json({ ok: false, error: "rate_limited" });
+    }
+
     let body = req.body;
     if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = {}; } }
     body = body || {};
