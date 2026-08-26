@@ -18,7 +18,16 @@ export async function loadBank(url = BANK_URL) {
   const res = await fetch(url, { cache: "no-cache" });
   if (!res.ok) throw new Error(`No se pudo cargar el banco (${res.status})`);
   const root = await res.json();
+  return buildBank(root);
+}
 
+/**
+ * Construye el banco a partir del JSON ya parseado. Separado de loadBank para
+ * poder cargarlo sin `fetch` (p. ej. en pruebas de Node).
+ * @param {Object} root
+ * @returns {Bank}
+ */
+export function buildBank(root) {
   const mkQuestions = (arr) =>
     (arr ?? []).map((q) => ({
       id: q.id,
@@ -74,12 +83,26 @@ export async function loadBank(url = BANK_URL) {
 
   const r = root.rules ?? {};
   const hp = r.highPriorityWhen ?? {};
+  const pr = r.priority ?? {};
   const rules = {
     candidateWhenYesAtLeast: r.candidateWhenYesAtLeast ?? 1,
     systemicContextsAtLeast: hp.systemicContextsAtLeast ?? 2,
     familyRedHigh: (hp.familySemaforo ?? "red") === "red",
     yesAtLeastHigh: hp.yesAnswersAtLeast ?? 2,
+    // Modelo de prioridad por impacto (frecuencia).
+    defaultImpact: pr.defaultImpact ?? 2,
+    altaWhenImpactAtLeast: pr.altaWhenImpactAtLeast ?? 3,
+    altaWhenSystemic: pr.altaWhenSystemic ?? true,
+    altaWhenRedAndImpactAtLeast: pr.altaWhenRedAndImpactAtLeast ?? 2,
+    altaWhenYes: pr.altaWhenYes ?? 2,
+    altaWhenYesImpactAtLeast: pr.altaWhenYesImpactAtLeast ?? 2,
+    bajaWhenImpactAtMost: pr.bajaWhenImpactAtMost ?? 1,
   };
+
+  // Escala de frecuencia/impacto: id -> peso, y etiqueta por id.
+  const freqScale = (root.scales?.frequency ?? []);
+  const freqWeightById = Object.fromEntries(freqScale.map((f) => [f.id, f.weight ?? 0]));
+  const freqLabelById = Object.fromEntries(freqScale.map((f) => [f.id, f.label ?? f.id]));
 
   const lang = root.resultLanguage ?? {};
 
@@ -94,6 +117,11 @@ export async function loadBank(url = BANK_URL) {
       "Resultado orientativo — no diagnostica al estudiante. Requiere revisión con el colectivo escolar y la UDEI.",
     candidateTemplate: lang.candidateTemplate ?? "Se identifica una posible barrera {sing}",
     systemicNote: lang.systemicNote ?? "Barrera sistémica · aparece en {n} contextos",
+
+    // Escala de frecuencia/impacto.
+    frequency: freqScale,
+    freqWeight(id) { return freqWeightById[id] ?? 0; },
+    freqLabel(id) { return freqLabelById[id] ?? ""; },
 
     // Helpers (equivalentes a los métodos de DynBank)
     family(key) { return families.find((f) => f.key === key || f.id === key) ?? null; },
@@ -193,13 +221,39 @@ export function evaluate({
     return m;
   }, {});
 
+  // Peso de impacto de una respuesta a partir de su frecuencia; si no se capturó
+  // frecuencia, se usa el impacto por defecto para no penalizar capturas antiguas.
+  const impactOf = (ans) => {
+    const w = bank.freqWeight(ans.freq);
+    return w > 0 ? w : bank.rules.defaultImpact;
+  };
+
   const familyBarriers = Object.entries(byFamily)
     .map(([familyId, items]) => {
       if (items.length < bank.rules.candidateWhenYesAtLeast) return null;
       const contexts = [...new Set(items.flatMap((a) => splitCsv(a.contexts)))];
       const systemic = contexts.length >= bank.rules.systemicContextsAtLeast;
       const red = bank.rules.familyRedHigh && semaphores[familyId] === "red";
-      const high = systemic || red || items.length >= bank.rules.yesAtLeastHigh;
+      // Impacto de la familia = mayor impacto entre sus barreras presentes.
+      const impact = items.reduce((mx, a) => Math.max(mx, impactOf(a)), 0);
+      const yesCount = items.length;
+
+      // Prioridad por impacto (alineada con "el impacto define la prioridad").
+      const rr = bank.rules;
+      let priority;
+      if (
+        impact >= rr.altaWhenImpactAtLeast ||
+        (rr.altaWhenSystemic && systemic) ||
+        (red && impact >= rr.altaWhenRedAndImpactAtLeast) ||
+        (yesCount >= rr.altaWhenYes && impact >= rr.altaWhenYesImpactAtLeast)
+      ) {
+        priority = "alta";
+      } else if (impact <= rr.bajaWhenImpactAtMost && !systemic && !red && yesCount < rr.altaWhenYes) {
+        priority = "baja";
+      } else {
+        priority = "media";
+      }
+
       const fam = bank.family(familyId);
       const deckQs = bank.deckQuestions(familyId, scopeCond);
 
@@ -213,6 +267,8 @@ export function evaluate({
             barrier: q?.text ?? ans.text ?? ans.questionId,
             strategy: q?.strategy ?? ans.strategy ?? "",
             contexts: orderContexts(splitCsv(ans.contexts), bank),
+            freq: ans.freq ?? null,
+            freqLabel: ans.freq ? bank.freqLabel(ans.freq) : "",
           };
         })
         .filter((bi) => {
@@ -226,9 +282,10 @@ export function evaluate({
         familyName: fam?.name ?? familyId,
         sing: fam?.sing ?? familyId,
         contexts: orderContexts(contexts, bank),
-        yesCount: items.length,
+        yesCount,
+        impact,
         systemic,
-        priority: high ? "alta" : "media",
+        priority,
         routes: routesFor(familyId, fam),
         items: barrierItems,
         custom: false,
@@ -256,9 +313,10 @@ export function evaluate({
     };
   });
 
+  const rank = { alta: 2, media: 1, baja: 0 };
   const all = [...familyBarriers, ...customBarriers].sort((a, b) => {
-    const pa = a.priority === "alta" ? 1 : 0;
-    const pb = b.priority === "alta" ? 1 : 0;
+    const pa = rank[a.priority] ?? 0;
+    const pb = rank[b.priority] ?? 0;
     if (pb !== pa) return pb - pa;
     return b.yesCount - a.yesCount;
   });
@@ -269,6 +327,8 @@ export function evaluate({
     barriers: all,
     familiesExplored: Object.values(semaphores).filter((v) => v === "amber" || v === "red").length,
     highCount: all.filter((b) => b.priority === "alta").length,
+    mediumCount: all.filter((b) => b.priority === "media").length,
+    lowCount: all.filter((b) => b.priority === "baja").length,
     systemicCount: all.filter((b) => b.systemic).length,
     pendingCount: answers.filter((a) => a.value === "idk").length,
     adaptedLabel: cond?.name ?? null,
@@ -303,15 +363,17 @@ export function buildReport(result, bank) {
   if (result.adaptedLabel) lines.push(`Adaptado a: ${result.adaptedLabel}`);
   lines.push(`Barreras candidatas: ${result.barriers.length}`);
   lines.push(
-    `Prioridad alta: ${result.highCount} · Prioridad media: ${result.barriers.length - result.highCount} · Familias exploradas: ${result.familiesExplored}`,
+    `Prioridad alta: ${result.highCount} · media: ${result.mediumCount ?? 0} · baja: ${result.lowCount ?? 0} · Familias exploradas: ${result.familiesExplored}`,
   );
+  if (result.systemicCount > 0) lines.push(`Barreras sistémicas (2+ contextos): ${result.systemicCount}`);
   if (result.pendingCount > 0) lines.push(`Pendientes por revisar ("No sé"): ${result.pendingCount}`);
   lines.push("");
   lines.push("── BARRERAS IDENTIFICADAS ──");
 
   result.barriers.forEach((b, i) => {
     lines.push("");
-    lines.push(`${i + 1}. Barrera ${b.sing}  [${b.priority.toUpperCase()}]`);
+    const sysTag = b.systemic ? " · SISTÉMICA" : "";
+    lines.push(`${i + 1}. Barrera ${b.sing}  [${b.priority.toUpperCase()}${sysTag}]`);
     if (b.custom) {
       if (b.contexts.length > 0)
         lines.push(`   Contextos: ${b.contexts.map((c) => contextTag(c, bank)).join(", ")}`);
@@ -322,7 +384,8 @@ export function buildReport(result, bank) {
         const ctx = it.contexts.length > 0
           ? ` (${it.contexts.map((c) => contextTag(c, bank)).join(", ")})`
           : "";
-        lines.push(`   • Barrera: ${it.barrier}${ctx}`);
+        const fq = it.freqLabel ? ` [${it.freqLabel}]` : "";
+        lines.push(`   • Barrera: ${it.barrier}${ctx}${fq}`);
         if (it.strategy.trim() !== "") lines.push(`     Estrategia: ${it.strategy}`);
       });
     }

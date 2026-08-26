@@ -158,13 +158,26 @@ body{
 .bar-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:11px;border-left:4px solid var(--line)}
 .bar-card.alta{border-left-color:var(--risk)}
 .bar-card.media{border-left-color:var(--warn)}
+.bar-card.baja{border-left-color:var(--ok)}
 .bar-card.review{border-left-color:var(--socio);border-left-style:dashed}
 .bar-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
 .bar-name{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--ink);line-height:1.15}
 .pri{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:8px;letter-spacing:.03em;white-space:nowrap;text-transform:uppercase;flex-shrink:0}
 .pri.alta{background:var(--risk-bg);color:var(--risk)}
 .pri.media{background:var(--warn-bg);color:var(--warn)}
-.bar-ctx{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.pri.baja{background:var(--ok-bg);color:var(--ok)}
+.bar-ctx{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.freq-tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:7px;background:var(--line);color:var(--ink2);white-space:nowrap}
+.sys-tag{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:7px;background:var(--socio-bg);color:var(--socio);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+/* Selector de frecuencia/impacto en la hoja de contexto */
+.freq-lbl{font-size:13px;font-weight:700;color:var(--ink);margin:14px 0 8px}
+.freq-lbl span{font-weight:500;color:var(--ink3);font-size:11.5px}
+.freq-opts{display:flex;gap:8px;margin-bottom:14px}
+.freq-opt{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:9px 8px;text-align:center;cursor:pointer;transition:border-color .12s,background .12s}
+.freq-opt .fq-lbl{font-size:12.5px;font-weight:700;color:var(--ink)}
+.freq-opt .fq-sub{font-size:10px;color:var(--ink3);line-height:1.2;margin-top:2px}
+.freq-opt.on{border-color:var(--teal);background:var(--teal-ctr)}
+.freq-opt.on .fq-lbl{color:var(--teal-dark)}
 .review-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--socio);background:var(--socio-bg);padding:4px 9px;border-radius:8px;margin-bottom:10px}
 .review-badge svg{width:13px;height:13px}
 .tag{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:8px}

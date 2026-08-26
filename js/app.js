@@ -287,7 +287,7 @@ function answer(val) {
   const q = deckQs(fam)[state.qi];
   if (val === "yes") {
     state.pendingCard = { questionId: q.id, familyId: fam.key, q: q.text, strategy: q.strategy };
-    state.pendingCtx = new Set(); openCtx();
+    state.pendingCtx = new Set(); state.pendingFreq = "medio"; openCtx();
     const st = card.querySelector(".stamp.yes"); if (st) st.style.opacity = 1;
     return;
   }
@@ -358,9 +358,18 @@ function setupContextSheet() {
     if (state.pendingCtx.has(id)) { state.pendingCtx.delete(id); o.classList.remove("on"); }
     else { state.pendingCtx.add(id); o.classList.add("on"); }
   };
+  // Selector de frecuencia/impacto (define la prioridad de la barrera).
+  const freqOpts = $("freqOpts");
+  freqOpts.innerHTML = (BANK.frequency || []).map((f) =>
+    `<div class="freq-opt" data-fq="${esc(f.id)}"><div class="fq-lbl">${esc(f.label)}</div><div class="fq-sub">${esc(f.sub || "")}</div></div>`).join("");
+  freqOpts.onclick = (e) => {
+    const o = e.target.closest(".freq-opt"); if (!o) return;
+    state.pendingFreq = o.dataset.fq;
+    freqOpts.querySelectorAll(".freq-opt").forEach((x) => x.classList.toggle("on", x === o));
+  };
   $("ctxConfirm").onclick = () => {
     const fam = orderFams()[state.di], card = topCard();
-    state.answers[fam.key + "-" + state.qi] = { ...state.pendingCard, val: "yes", ctx: [...state.pendingCtx] };
+    state.answers[fam.key + "-" + state.qi] = { ...state.pendingCard, val: "yes", ctx: [...state.pendingCtx], freq: state.pendingFreq || "medio" };
     $("ctxSheet").classList.remove("up"); $("ctxScrim").classList.remove("up");
     if (card) card.classList.add("gone-yes");
     persist(); setTimeout(nextCard, 300);
@@ -371,7 +380,12 @@ function setupContextSheet() {
   };
   $("ctxCancel").onclick = cancelCtx; $("ctxScrim").onclick = cancelCtx;
 }
-function openCtx() { $("ctxOpts").querySelectorAll(".ctx-opt").forEach((o) => o.classList.remove("on")); $("ctxSheet").classList.add("up"); $("ctxScrim").classList.add("up"); }
+function openCtx() {
+  $("ctxOpts").querySelectorAll(".ctx-opt").forEach((o) => o.classList.remove("on"));
+  const fq = state.pendingFreq || "medio";
+  $("freqOpts").querySelectorAll(".freq-opt").forEach((o) => o.classList.toggle("on", o.dataset.fq === fq));
+  $("ctxSheet").classList.add("up"); $("ctxScrim").classList.add("up");
+}
 
 // Ayuda por pregunta
 function openHelp() {
@@ -487,7 +501,7 @@ let lastResult = null;
 function computeResult() {
   const answers = Object.values(state.answers).map((a) => ({
     questionId: a.questionId, familyId: a.familyId, contexts: (a.ctx || []).join(","), value: a.val,
-    text: a.q, strategy: a.strategy,
+    text: a.q, strategy: a.strategy, freq: a.freq ?? null,
   }));
   const customs = state.custom.map((c) => ({ familyId: c.famId, description: c.desc, contexts: (c.ctx || []).join(",") }));
   return evaluate({
@@ -506,7 +520,6 @@ function buildResults() {
       <div class="disclaimer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><p>${esc(BANK.disclaimer)}</p></div>`;
     return;
   }
-  const altas = result.highCount;
   let html = `
     <div class="res-hero">
       <div class="k">Barreras candidatas del contexto</div>
@@ -516,9 +529,9 @@ function buildResults() {
       ${result.adaptedLabel ? `<div class="adapt-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6 4.3 2.3 7.3-6.3-4.6L5.7 21 8 14 2 9.4h7.6z"/></svg>Adaptado a: ${esc(result.adaptedLabel)}</div>` : ""}
     </div>
     <div class="res-stats">
-      <div class="res-stat"><div class="num" style="color:var(--risk)">${altas}</div><div class="cap">Prioridad alta</div></div>
-      <div class="res-stat"><div class="num" style="color:var(--warn)">${total - altas}</div><div class="cap">Prioridad media</div></div>
-      <div class="res-stat"><div class="num" style="color:var(--teal)">${result.familiesExplored}</div><div class="cap">Familias exploradas</div></div>
+      <div class="res-stat"><div class="num" style="color:var(--risk)">${result.highCount}</div><div class="cap">Prioridad alta</div></div>
+      <div class="res-stat"><div class="num" style="color:var(--warn)">${result.mediumCount}</div><div class="cap">Prioridad media</div></div>
+      <div class="res-stat"><div class="num" style="color:var(--ok)">${result.lowCount}</div><div class="cap">Prioridad baja</div></div>
     </div>`;
 
   result.barriers.forEach((b) => {
@@ -538,7 +551,7 @@ function buildResults() {
         <div style="font-size:13.5px;color:var(--ink);line-height:1.42;padding-left:15px;position:relative">
           <span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--risk)"></span>${esc(it.barrier)}
         </div>
-        ${it.contexts.length ? `<div class="bar-ctx" style="margin:6px 0 0 15px">${ctxTagsHtml(it.contexts)}</div>` : ""}
+        ${(it.contexts.length || it.freqLabel) ? `<div class="bar-ctx" style="margin:6px 0 0 15px">${ctxTagsHtml(it.contexts)}${it.freqLabel ? `<span class="freq-tag">${esc(it.freqLabel)}</span>` : ""}</div>` : ""}
       </div>`).join("");
     const estrategias = b.items.map((it) => it.strategy).filter(Boolean);
     const estrategiasHtml = estrategias.map((s) => `
@@ -550,7 +563,7 @@ function buildResults() {
     html += `
       <div class="bar-card ${b.priority}">
         <div class="bar-top"><div class="bar-name">Se identifica una posible barrera ${esc(b.sing)}</div><span class="pri ${b.priority}">${esc(b.priority)}</span></div>
-        <div class="bar-ctx">${ctxTagsHtml(b.contexts)}</div>
+        <div class="bar-ctx">${ctxTagsHtml(b.contexts)}${b.systemic ? '<span class="sys-tag">Sistémica</span>' : ""}</div>
         <div style="border-top:1px solid var(--line);padding-top:11px;margin-top:11px">
           ${blockLbl("var(--risk)", nB > 1 ? "Barreras" : "Barrera")}
           ${barrerasHtml}
@@ -640,7 +653,7 @@ const FUND = [
     { it: "Contexto Escolar", p: "Origen en la gestión institucional, la cultura, la organización y los recursos del plantel. Actor principal: dirección y colectivo docente (CTE)." },
     { it: "Contexto Áulico", p: "Origen en la práctica docente, la planeación, la evaluación y el ambiente del aula. Actor principal: docente de grupo." },
     { it: "Contexto Sociofamiliar", p: "Origen en la relación escuela-familia, los apoyos en casa y el entorno comunitario. Actor principal: familia y comunidad." },
-    { p: "Regla clave: el impacto en el alumno define la urgencia/prioridad, no el contexto. Una misma barrera activa en dos o más contextos se considera sistémica y eleva la prioridad." },
+    { p: "Regla clave: el impacto en el alumno define la urgencia/prioridad, no el contexto. En esta herramienta el impacto se estima con la frecuencia con que ocurre la barrera (a veces / seguido / casi siempre): a mayor frecuencia, mayor prioridad. Además, una misma barrera activa en dos o más contextos se considera sistémica y también eleva la prioridad." },
   ]},
   { n: "8", t: "Cómo se identifican", body: [
     { ul: ["Diagnóstico integral en el CTE y observación en aula, escuela y familia.", "Valoración inicial por la UDEI.", "Identificación de BAPyC a partir de indicadores observables (no de etiquetas sobre el alumno).", "Informe Individual de Valoración Educativa.", "Plan de Intervención en los tres contextos.", "Seguimiento y ajuste."] },
@@ -652,6 +665,18 @@ const FUND = [
   ]},
   { n: "10", t: "Fuentes principales", body: [
     { ul: ["Booth, T. & Ainscow, M. — Index for Inclusion / Índice de Inclusión.", "Ley General de Educación, arts. 61–68 (reforma DOF 07/06/2024).", "SEP — Instrumento de registro de las BAP (CTE).", "Secretaría de Educación de Nuevo León — Marco de la Educación Inclusiva y cuadernillos UDEI/CAST.", "Clasificación de BAPyC (Nuevo León): tabla oficial de tipos × contextos."] },
+  ]},
+  { n: "11", t: "Glosario rápido", body: [
+    { p: "Términos que aparecen en las preguntas y estrategias:" },
+    { it: "DUA (Diseño Universal para el Aprendizaje)", p: "Planear la enseñanza con múltiples formas de representar, expresar y motivar, para que sea accesible a todo el grupo desde el inicio." },
+    { it: "Ajustes razonables", p: "Apoyos específicos y proporcionales para un alumno cuando el DUA no basta (más tiempo, formato distinto, apoyos), sin bajar el aprendizaje esperado." },
+    { it: "Andamiaje", p: "Apoyos temporales (ejemplos, esquemas, pasos, pistas) que se retiran conforme el alumno gana autonomía." },
+    { it: "Barrera sistémica", p: "Una misma barrera presente en dos o más contextos (escolar, áulico, sociofamiliar); eleva la prioridad." },
+    { it: "Conceptualización", p: "El nivel de comprensión de un contenido que ya alcanzó el alumno; el punto desde el cual se ajusta la enseñanza." },
+    { it: "Macrotipo", p: "Texto ampliado (letra grande y buen contraste) para aprovechar el resto visual de quien tiene baja visión." },
+    { it: "Resto visual", p: "La capacidad visual que conserva una persona con discapacidad visual y que conviene aprovechar." },
+    { it: "LSM", p: "Lengua de Señas Mexicana: lengua propia de la comunidad sorda, con gramática propia; una vía de comunicación válida." },
+    { it: "CAST / Aptitudes sobresalientes", p: "Alumnado con capacidades por encima de lo esperado que requiere enriquecimiento y reto, no solo \"más de lo mismo\"." },
   ]},
 ];
 
