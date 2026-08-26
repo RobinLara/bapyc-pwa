@@ -45,6 +45,7 @@
               ${it.rating >= 1 ? `<span class="stars" title="${it.rating}/5">${stars(it.rating)}</span>` : ""}
               <span class="chip">${esc(it.category || "otro")}</span>
               <span class="when">${esc(fmtDate(it.ts))}</span>
+              <button class="del" data-id="${esc(it.id)}" title="Eliminar comentario" aria-label="Eliminar">🗑</button>
             </div>
             ${it.text ? `<div class="txt">${esc(it.text)}</div>` : '<div class="txt muted">(sin texto)</div>'}
             <div class="meta">
@@ -79,10 +80,32 @@
   function showDash() { $("login").style.display = "none"; $("dash").style.display = "block"; }
   function showLogin() { $("dash").style.display = "none"; $("login").style.display = "block"; }
 
+  async function del(url, okMsg) {
+    const t = sessionStorage.getItem(TKEY); if (!t) return;
+    try {
+      const res = await fetch(url + (url.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(t), { method: "DELETE" });
+      if (res.ok) { load(t); } else { alert("No se pudo eliminar (" + res.status + ")."); }
+    } catch { alert("No se pudo conectar."); }
+  }
+
   $("loginBtn").addEventListener("click", () => { const t = $("pw").value.trim(); if (t) load(t); });
   $("pw").addEventListener("keydown", (e) => { if (e.key === "Enter") $("loginBtn").click(); });
   $("reload").addEventListener("click", () => { const t = sessionStorage.getItem(TKEY); if (t) load(t); });
   $("logout").addEventListener("click", () => { sessionStorage.removeItem(TKEY); showLogin(); $("pw").value = ""; });
+
+  // Eliminar un comentario (delegación en la lista).
+  $("list").addEventListener("click", (e) => {
+    const b = e.target.closest(".del"); if (!b) return;
+    if (confirm("¿Eliminar este comentario? No se puede deshacer.")) {
+      del("./api/feedback?id=" + encodeURIComponent(b.dataset.id));
+    }
+  });
+  // Borrar todos.
+  $("delAll").addEventListener("click", () => {
+    if (confirm("¿Borrar TODOS los comentarios? Esta acción no se puede deshacer.")) {
+      del("./api/feedback?all=1");
+    }
+  });
 
   const saved = sessionStorage.getItem(TKEY);
   if (saved) load(saved);

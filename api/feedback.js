@@ -121,6 +121,36 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: true, stats, items });
   }
 
-  res.setHeader("Allow", "GET, POST");
+  // ── Eliminar comentarios (admin) ────────────────────────────────────────
+  if (req.method === "DELETE") {
+    const token = (req.query && req.query.token) || "";
+    if (!process.env.ADMIN_TOKEN || token !== process.env.ADMIN_TOKEN) {
+      return res.status(401).json({ ok: false, error: "unauthorized" });
+    }
+    const all = req.query.all === "1" || req.query.all === "true";
+    const id = req.query.id ? String(req.query.id) : "";
+
+    try {
+      if (all) {
+        await redis(["DEL", KEY]);
+        return res.status(200).json({ ok: true, deleted: "all" });
+      }
+      if (!id) return res.status(400).json({ ok: false, error: "missing_id" });
+
+      // Reconstruir la lista sin el elemento indicado (conserva orden y contenido exacto).
+      const r = await redis(["LRANGE", KEY, "0", "-1"]);
+      const raw = r.result || [];
+      const keep = raw.filter((s) => {
+        try { return JSON.parse(s).id !== id; } catch { return true; }
+      });
+      await redis(["DEL", KEY]);
+      if (keep.length) await redis(["RPUSH", KEY, ...keep]);
+      return res.status(200).json({ ok: true, deleted: id, remaining: keep.length });
+    } catch (e) {
+      return res.status(502).json({ ok: false, error: "store_failed" });
+    }
+  }
+
+  res.setHeader("Allow", "GET, POST, DELETE");
   return res.status(405).json({ ok: false, error: "method_not_allowed" });
 };
