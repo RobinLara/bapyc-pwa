@@ -2,7 +2,8 @@
 // BAPyC · Service Worker — soporte offline (la app funciona sin internet)
 //
 // Estrategia:
-//   · App shell (HTML/CSS/JS/JSON/manifest): precache en install → cache-first.
+//   · App shell (HTML/CSS/JS/JSON/manifest): precache en install → network-first
+//     (usa la versión en línea más reciente; el cache es respaldo offline).
 //   · Google Fonts: stale-while-revalidate (usa lo cacheado, refresca en segundo plano).
 // Al publicar una versión nueva, sube CACHE_VERSION para invalidar el cache viejo.
 // ─────────────────────────────────────────────────────────────────────────────
