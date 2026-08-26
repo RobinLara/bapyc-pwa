@@ -208,8 +208,10 @@ export function evaluate({
         .map((ans) => {
           const q = deckQs.find((qq) => qq.id === ans.questionId);
           return {
-            barrier: q?.text ?? ans.questionId,
-            strategy: q?.strategy ?? "",
+            // Texto/estrategia: la pregunta encontrada; si no, el texto que trae la
+            // propia respuesta (robusto); en último caso, el id (nunca debería verse).
+            barrier: q?.text ?? ans.text ?? ans.questionId,
+            strategy: q?.strategy ?? ans.strategy ?? "",
             contexts: orderContexts(splitCsv(ans.contexts), bank),
           };
         })

@@ -286,14 +286,14 @@ function answer(val) {
   if (!card || !fam || gone(card)) return;
   const q = deckQs(fam)[state.qi];
   if (val === "yes") {
-    state.pendingCard = { questionId: q.id, familyId: fam.key, q: q.text };
+    state.pendingCard = { questionId: q.id, familyId: fam.key, q: q.text, strategy: q.strategy };
     state.pendingCtx = new Set(); openCtx();
     const st = card.querySelector(".stamp.yes"); if (st) st.style.opacity = 1;
     return;
   }
   card.classList.add(val === "no" ? "gone-no" : "gone-idk");
   const st = card.querySelector(".stamp.no"); if (val === "no" && st) st.style.opacity = 1;
-  state.answers[fam.key + "-" + state.qi] = { questionId: q.id, familyId: fam.key, q: q.text, val, ctx: [] };
+  state.answers[fam.key + "-" + state.qi] = { questionId: q.id, familyId: fam.key, q: q.text, strategy: q.strategy, val, ctx: [] };
   persist(); setTimeout(nextCard, 300);
 }
 function nextCard() {
@@ -487,6 +487,7 @@ let lastResult = null;
 function computeResult() {
   const answers = Object.values(state.answers).map((a) => ({
     questionId: a.questionId, familyId: a.familyId, contexts: (a.ctx || []).join(","), value: a.val,
+    text: a.q, strategy: a.strategy,
   }));
   const customs = state.custom.map((c) => ({ familyId: c.famId, description: c.desc, contexts: (c.ctx || []).join(",") }));
   return evaluate({
@@ -531,18 +532,33 @@ function buildResults() {
         </div>`;
       return;
     }
-    const itemsHtml = b.items.map((it) => `
-      <div style="border-top:1px solid var(--line);padding-top:10px;margin-top:10px">
-        <div style="font-size:10.5px;font-weight:800;color:var(--risk);text-transform:uppercase;letter-spacing:.04em">Barrera</div>
-        <div style="font-size:13.5px;color:var(--ink);line-height:1.4;margin:3px 0 ${it.contexts.length ? "7px" : "8px"}">${esc(it.barrier)}</div>
-        ${it.contexts.length ? `<div class="bar-ctx" style="margin-bottom:9px">${ctxTagsHtml(it.contexts)}</div>` : ""}
-        ${it.strategy ? `<div style="font-size:10.5px;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:.04em">Estrategia</div><div style="font-size:13px;color:var(--ink2);line-height:1.45;margin-top:3px">${esc(it.strategy)}</div>` : ""}
+    // Primero TODAS las barreras de la familia, luego TODAS las estrategias.
+    const barrerasHtml = b.items.map((it) => `
+      <div style="margin-top:10px">
+        <div style="font-size:13.5px;color:var(--ink);line-height:1.42;padding-left:15px;position:relative">
+          <span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--risk)"></span>${esc(it.barrier)}
+        </div>
+        ${it.contexts.length ? `<div class="bar-ctx" style="margin:6px 0 0 15px">${ctxTagsHtml(it.contexts)}</div>` : ""}
       </div>`).join("");
+    const estrategias = b.items.map((it) => it.strategy).filter(Boolean);
+    const estrategiasHtml = estrategias.map((s) => `
+      <div style="font-size:13px;color:var(--ink2);line-height:1.45;margin-top:9px;padding-left:15px;position:relative">
+        <span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--teal)"></span>${esc(s)}
+      </div>`).join("");
+    const nB = b.items.length, nS = estrategias.length;
+    const blockLbl = (color, txt) => `<div style="font-size:10.5px;font-weight:800;color:${color};text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px">${txt}</div>`;
     html += `
       <div class="bar-card ${b.priority}">
         <div class="bar-top"><div class="bar-name">Se identifica una posible barrera ${esc(b.sing)}</div><span class="pri ${b.priority}">${esc(b.priority)}</span></div>
         <div class="bar-ctx">${ctxTagsHtml(b.contexts)}</div>
-        ${itemsHtml}
+        <div style="border-top:1px solid var(--line);padding-top:11px;margin-top:11px">
+          ${blockLbl("var(--risk)", nB > 1 ? "Barreras" : "Barrera")}
+          ${barrerasHtml}
+        </div>
+        ${nS ? `<div style="border-top:1px solid var(--line);padding-top:11px;margin-top:12px">
+          ${blockLbl("var(--teal)", nS > 1 ? "Estrategias" : "Estrategia")}
+          ${estrategiasHtml}
+        </div>` : ""}
       </div>`;
   });
 
