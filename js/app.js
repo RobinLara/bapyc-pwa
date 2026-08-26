@@ -665,62 +665,39 @@ function setupHome() {
   $("backAbout").onclick = () => go("inicio");
 }
 
-// ── Instalar en pantalla de inicio (A2HS) ────────────────────────────────────
+// ── Instalar en pantalla de inicio — SOLO iPhone/iPad ────────────────────────
+// En Android/escritorio el navegador ofrece su propia instalación, así que el
+// botón solo se muestra en dispositivos Apple, donde no hay instalación automática
+// y hay que guiar el "Compartir → Agregar a inicio".
 function setupInstall() {
   const btn = $("installBtn");
   const sheet = $("installSheet"), scrim = $("installScrim");
   const ua = navigator.userAgent || "";
   const isIOS = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
   const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-  let deferred = null; // evento beforeinstallprompt (Android/Chromium)
 
-  if (standalone) { btn.style.display = "none"; return; } // ya instalada
+  // Ocultar en todo lo que no sea iPhone/iPad, o si ya está instalada.
+  if (!isIOS || standalone) { btn.style.display = "none"; return; }
 
   const shareIco = '<span class="install-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></span>';
   const plusIco = '<span class="install-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>';
-  const dotsIco = '<span class="install-ico"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></span>';
 
   const openSheet = () => {
-    if (isIOS) {
-      $("installTitle").textContent = "Instalar en tu iPhone";
-      $("installIntro").textContent = "Para tenerla como app —con ícono propio, a pantalla completa y funcionando sin internet— agrégala a tu pantalla de inicio desde Safari:";
-      $("installSteps").innerHTML =
-        `<li>Toca ${shareIco} <b>Compartir</b> (abajo, al centro).</li>` +
-        `<li>Desliza y toca ${plusIco} <b>Agregar a inicio</b>.</li>` +
-        `<li>Toca <b>Agregar</b> (arriba a la derecha).</li>`;
-    } else {
-      $("installTitle").textContent = "Instalar la app";
-      $("installIntro").textContent = "Agrégala a tu dispositivo para abrirla como app, a pantalla completa y sin internet:";
-      $("installSteps").innerHTML =
-        `<li>Toca ${dotsIco} <b>menú</b> del navegador (arriba a la derecha).</li>` +
-        `<li>Elige <b>Instalar app</b> o <b>Agregar a pantalla de inicio</b>.</li>` +
-        `<li>Confirma con <b>Instalar</b> / <b>Agregar</b>.</li>`;
-    }
+    $("installTitle").textContent = "Instalar en tu iPhone";
+    $("installIntro").textContent = "Para tenerla como app —con ícono propio, a pantalla completa y funcionando sin internet— agrégala a tu pantalla de inicio desde Safari:";
+    $("installSteps").innerHTML =
+      `<li>Toca ${shareIco} <b>Compartir</b> (abajo, al centro).</li>` +
+      `<li>Desliza y toca ${plusIco} <b>Agregar a inicio</b>.</li>` +
+      `<li>Toca <b>Agregar</b> (arriba a la derecha).</li>`;
     sheet.classList.add("up"); scrim.classList.add("up");
   };
   const closeSheet = () => { sheet.classList.remove("up"); scrim.classList.remove("up"); };
   $("installClose").onclick = closeSheet;
   scrim.onclick = closeSheet;
+  btn.onclick = openSheet;
 
-  // Android / Chromium: capturar el prompt nativo
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault(); deferred = e; btn.style.display = "flex";
-  });
-  window.addEventListener("appinstalled", () => {
-    deferred = null; btn.style.display = "none"; closeSheet(); toast("¡App instalada!");
-  });
+  window.addEventListener("appinstalled", () => { btn.style.display = "none"; closeSheet(); });
 
-  btn.onclick = async () => {
-    if (deferred) {
-      deferred.prompt();
-      try { await deferred.userChoice; } catch {}
-      deferred = null; btn.style.display = "none";
-    } else {
-      openSheet();
-    }
-  };
-
-  // Mostrar el botón: siempre en iOS (no hay evento), y como respaldo en el resto.
   btn.style.display = "flex";
 }
 
