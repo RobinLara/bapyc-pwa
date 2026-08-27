@@ -706,39 +706,117 @@ function setupHome() {
   $("backAbout").onclick = () => go("inicio");
 }
 
-// ── Instalar en pantalla de inicio — SOLO iPhone/iPad ────────────────────────
-// En Android/escritorio el navegador ofrece su propia instalación, así que el
-// botón solo se muestra en dispositivos Apple, donde no hay instalación automática
-// y hay que guiar el "Compartir → Agregar a inicio".
+// ── Instalar en pantalla de inicio — iPhone · Android · PC · Mac ──────────────
+// Android y Chrome/Edge de escritorio emiten `beforeinstallprompt`: ahí el botón
+// dispara el instalador nativo. iPhone/iPad (Safari) y Mac (Safari) no lo emiten,
+// así que se muestra una hoja con los pasos manuales propios de cada plataforma.
 function setupInstall() {
   const btn = $("installBtn");
   const sheet = $("installSheet"), scrim = $("installScrim");
   const ua = navigator.userAgent || "";
   const isIOS = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const isAndroid = /android/i.test(ua);
+  const isWindows = /Windows/i.test(ua);
+  const isMac = /Macintosh|Mac OS X/i.test(ua) && !isIOS;
+  const isChromium = /Chrome|Chromium|Edg\//i.test(ua) && !/OPR\/|SamsungBrowser/i.test(ua);
   const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  let deferred = null; // evento beforeinstallprompt (Android / Chromium)
 
-  // Ocultar en todo lo que no sea iPhone/iPad, o si ya está instalada.
-  if (!isIOS || standalone) { btn.style.display = "none"; return; }
+  if (standalone) { btn.style.display = "none"; return; } // ya instalada
 
   const shareIco = '<span class="install-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></span>';
   const plusIco = '<span class="install-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>';
+  const dotsIco = '<span class="install-ico"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></span>';
+  const boxIco = '<span class="install-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M12 8v5m0 0l-2.5-2.5M12 13l2.5-2.5"/></svg></span>';
+
+  // Contenido de la hoja según la plataforma detectada.
+  const content = () => {
+    if (isIOS) return {
+      title: "Instalar en tu iPhone",
+      intro: "Para tenerla como app —con ícono propio, a pantalla completa y funcionando sin internet— agrégala a tu pantalla de inicio desde Safari:",
+      steps: [
+        `Toca ${shareIco} <b>Compartir</b> (abajo, al centro).`,
+        `Desliza y toca ${plusIco} <b>Agregar a inicio</b>.`,
+        `Toca <b>Agregar</b> (arriba a la derecha).`,
+      ],
+    };
+    if (isAndroid) return {
+      title: "Instalar en tu Android",
+      intro: "Agrégala a tu pantalla de inicio para abrirla como app, a pantalla completa y sin internet, desde Chrome:",
+      steps: [
+        `Abre el ${dotsIco} <b>menú</b> (arriba a la derecha).`,
+        `Elige <b>Instalar app</b> o <b>Agregar a pantalla de inicio</b>.`,
+        `Confirma con <b>Instalar</b>.`,
+      ],
+    };
+    if (isWindows) return {
+      title: "Instalar en tu PC",
+      intro: "Instálala para abrirla como app, en su propia ventana y sin internet, desde Chrome o Edge:",
+      steps: [
+        `Haz clic en ${boxIco} <b>Instalar</b>, al final de la barra de direcciones.`,
+        `Si no aparece, abre el ${dotsIco} <b>menú</b> → <b>Instalar BAPyC…</b> (Chrome) o <b>Aplicaciones → Instalar</b> (Edge).`,
+        `Confirma con <b>Instalar</b>.`,
+      ],
+    };
+    if (isMac) return isChromium ? {
+      title: "Instalar en tu Mac",
+      intro: "Instálala para abrirla como app, en su propia ventana y sin internet, desde Chrome o Edge:",
+      steps: [
+        `Haz clic en ${boxIco} <b>Instalar</b>, al final de la barra de direcciones.`,
+        `Si no aparece, abre el ${dotsIco} <b>menú</b> → <b>Instalar BAPyC…</b>.`,
+        `Confirma con <b>Instalar</b>.`,
+      ],
+    } : {
+      title: "Instalar en tu Mac",
+      intro: "Añádela al Dock para abrirla como app, en su propia ventana y sin internet, desde Safari:",
+      steps: [
+        `Abre el menú <b>Archivo</b> (barra superior).`,
+        `Elige ${plusIco} <b>Añadir al Dock…</b>.`,
+        `Confirma con <b>Añadir</b>.`,
+      ],
+    };
+    // Respaldo genérico (otros navegadores).
+    return {
+      title: "Instalar la app",
+      intro: "Agrégala a tu dispositivo para abrirla como app, a pantalla completa y sin internet:",
+      steps: [
+        `Abre el ${dotsIco} <b>menú</b> del navegador.`,
+        `Elige <b>Instalar app</b> o <b>Agregar a pantalla de inicio</b>.`,
+        `Confirma con <b>Instalar</b> / <b>Agregar</b>.`,
+      ],
+    };
+  };
 
   const openSheet = () => {
-    $("installTitle").textContent = "Instalar en tu iPhone";
-    $("installIntro").textContent = "Para tenerla como app —con ícono propio, a pantalla completa y funcionando sin internet— agrégala a tu pantalla de inicio desde Safari:";
-    $("installSteps").innerHTML =
-      `<li>Toca ${shareIco} <b>Compartir</b> (abajo, al centro).</li>` +
-      `<li>Desliza y toca ${plusIco} <b>Agregar a inicio</b>.</li>` +
-      `<li>Toca <b>Agregar</b> (arriba a la derecha).</li>`;
+    const c = content();
+    $("installTitle").textContent = c.title;
+    $("installIntro").textContent = c.intro;
+    $("installSteps").innerHTML = c.steps.map((s) => `<li>${s}</li>`).join("");
     sheet.classList.add("up"); scrim.classList.add("up");
   };
   const closeSheet = () => { sheet.classList.remove("up"); scrim.classList.remove("up"); };
   $("installClose").onclick = closeSheet;
   scrim.onclick = closeSheet;
-  btn.onclick = openSheet;
 
-  window.addEventListener("appinstalled", () => { btn.style.display = "none"; closeSheet(); });
+  // Android / Chromium: capturar el prompt nativo del navegador.
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault(); deferred = e; btn.style.display = "flex";
+  });
+  window.addEventListener("appinstalled", () => {
+    deferred = null; btn.style.display = "none"; closeSheet(); toast("¡App instalada!");
+  });
 
+  btn.onclick = async () => {
+    if (deferred) {
+      deferred.prompt();
+      try { await deferred.userChoice; } catch {}
+      deferred = null; btn.style.display = "none";
+    } else {
+      openSheet();
+    }
+  };
+
+  // Mostrar siempre (salvo ya instalada): iOS/Safari/Mac no emiten el evento.
   btn.style.display = "flex";
 }
 
