@@ -40,6 +40,31 @@ const cvar = (n) => getComputedStyle(document.documentElement).getPropertyValue(
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 const $ = (id) => document.getElementById(id);
 const STORE_KEY = "bapyc.pwa.state.v1";
+const RESULT_KEY = "bapyc.pwa.lastresult.v1";
+
+// ── Último resultado guardado (para consultarlo desde Inicio) ─────────────────
+function saveLastResult(result) {
+  try { localStorage.setItem(RESULT_KEY, JSON.stringify({ ts: Date.now(), result })); } catch {}
+}
+function loadLastResult() {
+  try { const raw = localStorage.getItem(RESULT_KEY); return raw ? JSON.parse(raw) : null; }
+  catch { return null; }
+}
+// Muestra/oculta el botón "Ver últimos resultados" de Inicio según haya guardado.
+function refreshSavedResultsBtn() {
+  const btn = $("homeResults"); if (!btn) return;
+  const saved = loadLastResult();
+  if (saved && saved.result) {
+    btn.style.display = "";
+    const sub = $("homeResultsSub");
+    if (sub && saved.ts) {
+      const d = new Date(saved.ts), p = (n) => String(n).padStart(2, "0");
+      sub.textContent = `Última evaluación · ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+  } else {
+    btn.style.display = "none";
+  }
+}
 
 // ── Modelos de vista (derivados del banco) ───────────────────────────────────
 let BANK, FAMS, CTX, SCOPES, CONDITIONS, FAM_BY_KEY;
@@ -94,6 +119,7 @@ function go(name) {
   Object.values(views).forEach((v) => v.classList.remove("active"));
   views[name].classList.add("active");
   const b = views[name].querySelector(".body"); if (b) b.scrollTop = 0;
+  if (name === "inicio") refreshSavedResultsBtn();
 }
 
 // ── Toast ────────────────────────────────────────────────────────────────────
@@ -512,7 +538,19 @@ function computeResult() {
 function ctxTagsHtml(list) { return (list || []).map((c) => `<span class="tag ${c}">${esc(contextTag(c, BANK))}</span>`).join(""); }
 
 function buildResults() {
-  const result = computeResult(); lastResult = result;
+  const result = computeResult();
+  saveLastResult(result);
+  renderResultsView(result);
+}
+// Abre los resultados guardados sin recalcular (consulta desde Inicio).
+function openSavedResults() {
+  const saved = loadLastResult();
+  if (!saved || !saved.result) { toast("Aún no hay resultados guardados"); return; }
+  renderResultsView(saved.result);
+  go("resultados");
+}
+function renderResultsView(result) {
+  lastResult = result;
   const rb = $("resBody");
   const total = result.barriers.length;
   if (!total) {
@@ -700,10 +738,13 @@ function renderFundamentos() {
 
 function setupHome() {
   $("homeStart").onclick = resetAll;
+  $("homeResults").onclick = openSavedResults;
   $("homeFund").onclick = () => go("fundamentos");
   $("homeAbout").onclick = () => go("acerca");
   $("backFund").onclick = () => go("inicio");
   $("backAbout").onclick = () => go("inicio");
+  const br = $("backResults"); if (br) br.onclick = () => go("inicio");
+  refreshSavedResultsBtn();
 }
 
 // ── Instalar en pantalla de inicio — iPhone · Android · PC · Mac ──────────────
