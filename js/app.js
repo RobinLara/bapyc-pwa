@@ -536,8 +536,11 @@ function ctxTagsHtml(list) { return (list || []).map((c) => `<span class="tag ${
 
 const resultsFoot = () => document.querySelector('.view[data-view="resultados"] .foot');
 
+function setResKicker(txt) { const k = $("resKicker"); if (k) k.textContent = txt; }
+
 function buildResults() {
   const f = resultsFoot(); if (f) f.style.display = "";
+  setResKicker("Paso 4 de 4 · Resultados");
   const result = computeResult();
   saveLastResult(result);
   renderResultsView(result);
@@ -552,12 +555,14 @@ function openSavedResults() {
     return;
   }
   const f = resultsFoot(); if (f) f.style.display = "";
+  setResKicker("Consulta · Resultados");
   renderResultsView(saved.result);
   go("resultados");
 }
 // Estado vacío: sin evaluaciones todavía.
 function renderResultsEmpty() {
   lastResult = null;
+  setResKicker("Consulta · Resultados");
   const f = resultsFoot(); if (f) f.style.display = "none";
   $("resBody").innerHTML = `
     <div class="res-hero">
