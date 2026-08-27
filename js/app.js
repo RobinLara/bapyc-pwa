@@ -699,7 +699,7 @@ function renderFundamentos() {
 }
 
 function setupHome() {
-  $("homeStart").onclick = () => go("scope");
+  $("homeStart").onclick = resetAll;
   $("homeFund").onclick = () => go("fundamentos");
   $("homeAbout").onclick = () => go("acerca");
   $("backFund").onclick = () => go("inicio");
