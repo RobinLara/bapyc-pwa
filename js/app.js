@@ -50,19 +50,16 @@ function loadLastResult() {
   try { const raw = localStorage.getItem(RESULT_KEY); return raw ? JSON.parse(raw) : null; }
   catch { return null; }
 }
-// Muestra/oculta el botón "Ver últimos resultados" de Inicio según haya guardado.
+// El botón "Ver últimos resultados" SIEMPRE se muestra; solo cambia su subtítulo
+// según haya o no una evaluación guardada.
 function refreshSavedResultsBtn() {
-  const btn = $("homeResults"); if (!btn) return;
+  const sub = $("homeResultsSub"); if (!sub) return;
   const saved = loadLastResult();
-  if (saved && saved.result) {
-    btn.style.display = "";
-    const sub = $("homeResultsSub");
-    if (sub && saved.ts) {
-      const d = new Date(saved.ts), p = (n) => String(n).padStart(2, "0");
-      sub.textContent = `Última evaluación · ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
-    }
+  if (saved && saved.result && saved.ts) {
+    const d = new Date(saved.ts), p = (n) => String(n).padStart(2, "0");
+    sub.textContent = `Última evaluación · ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
   } else {
-    btn.style.display = "none";
+    sub.textContent = "Aún no has realizado ninguna evaluación";
   }
 }
 
@@ -537,17 +534,46 @@ function computeResult() {
 }
 function ctxTagsHtml(list) { return (list || []).map((c) => `<span class="tag ${c}">${esc(contextTag(c, BANK))}</span>`).join(""); }
 
+const resultsFoot = () => document.querySelector('.view[data-view="resultados"] .foot');
+
 function buildResults() {
+  const f = resultsFoot(); if (f) f.style.display = "";
   const result = computeResult();
   saveLastResult(result);
   renderResultsView(result);
 }
 // Abre los resultados guardados sin recalcular (consulta desde Inicio).
+// Si aún no hay ninguna evaluación, muestra un estado vacío que invita a hacerla.
 function openSavedResults() {
   const saved = loadLastResult();
-  if (!saved || !saved.result) { toast("Aún no hay resultados guardados"); return; }
+  if (!saved || !saved.result) {
+    renderResultsEmpty();
+    go("resultados");
+    return;
+  }
+  const f = resultsFoot(); if (f) f.style.display = "";
   renderResultsView(saved.result);
   go("resultados");
+}
+// Estado vacío: sin evaluaciones todavía.
+function renderResultsEmpty() {
+  lastResult = null;
+  const f = resultsFoot(); if (f) f.style.display = "none";
+  $("resBody").innerHTML = `
+    <div class="res-hero">
+      <div class="k">Sin resultados todavía</div>
+      <div class="big" style="font-size:38px">—</div>
+      <div class="sm">Aún no has realizado ninguna evaluación.</div>
+    </div>
+    <div class="empty-res">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <p>Realiza tu primera evaluación para consultar aquí el reporte de barreras y estrategias de intervención.</p>
+      <button class="cta" id="emptyStartBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg>
+        Realizar mi primera evaluación
+      </button>
+    </div>`;
+  const b = $("emptyStartBtn"); if (b) b.onclick = resetAll;
 }
 function renderResultsView(result) {
   lastResult = result;
