@@ -8,7 +8,7 @@
 // Al publicar una versión nueva, sube CACHE_VERSION para invalidar el cache viejo.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CACHE_VERSION = "bapyc-v2";
+const CACHE_VERSION = "bapyc-v3";
 const SHELL = [
   "./",
   "./index.html",

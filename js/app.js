@@ -40,24 +40,50 @@ const cvar = (n) => getComputedStyle(document.documentElement).getPropertyValue(
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 const $ = (id) => document.getElementById(id);
 const STORE_KEY = "bapyc.pwa.state.v1";
-const RESULT_KEY = "bapyc.pwa.lastresult.v1";
+const LEGACY_RESULT_KEY = "bapyc.pwa.lastresult.v1";
+const HISTORY_KEY = "bapyc.pwa.results.v2";
 
-// ── Último resultado guardado (para consultarlo desde Inicio) ─────────────────
-function saveLastResult(result) {
-  try { localStorage.setItem(RESULT_KEY, JSON.stringify({ ts: Date.now(), result })); } catch {}
+// ── Historial de evaluaciones ────────────────────────────────────────────────
+function resultId() {
+  if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
-function loadLastResult() {
-  try { const raw = localStorage.getItem(RESULT_KEY); return raw ? JSON.parse(raw) : null; }
-  catch { return null; }
+function writeHistory(history) {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); return true; }
+  catch { return false; }
 }
-// El botón "Ver últimos resultados" SIEMPRE se muestra; solo cambia su subtítulo
-// según haya o no una evaluación guardada.
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (Array.isArray(parsed)) return parsed.filter((x) => x && x.result && x.ts);
+  } catch {}
+  return [];
+}
+function migrateLegacyResult() {
+  if (loadHistory().length) return;
+  try {
+    const raw = localStorage.getItem(LEGACY_RESULT_KEY);
+    const saved = raw ? JSON.parse(raw) : null;
+    if (saved?.result && saved?.ts && writeHistory([{ id: resultId(), ts: saved.ts, result: saved.result }])) {
+      localStorage.removeItem(LEGACY_RESULT_KEY);
+    }
+  } catch {}
+}
+function saveResult(result) {
+  const history = loadHistory();
+  const entry = { id: resultId(), ts: Date.now(), result };
+  return writeHistory([entry, ...history]) ? entry : null;
+}
+function formatResultDate(ts) {
+  const d = new Date(ts), p = (n) => String(n).padStart(2, "0");
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} · ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
 function refreshSavedResultsBtn() {
   const sub = $("homeResultsSub"); if (!sub) return;
-  const saved = loadLastResult();
-  if (saved && saved.result && saved.ts) {
-    const d = new Date(saved.ts), p = (n) => String(n).padStart(2, "0");
-    sub.textContent = `Última evaluación · ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  const history = loadHistory();
+  if (history.length) {
+    sub.textContent = `${history.length} ${history.length === 1 ? "evaluación guardada" : "evaluaciones guardadas"} · última ${formatResultDate(history[0].ts)}`;
   } else {
     sub.textContent = "Aún no has realizado ninguna evaluación";
   }
@@ -521,6 +547,8 @@ function openBarSheet() {
 
 // ── Resultados (VIEW 4) ──────────────────────────────────────────────────────
 let lastResult = null;
+let resultsBackTarget = "inicio";
+const selectedHistory = new Set();
 function computeResult() {
   const answers = Object.values(state.answers).map((a) => ({
     questionId: a.questionId, familyId: a.familyId, contexts: (a.ctx || []).join(","), value: a.val,
@@ -541,23 +569,105 @@ function setResKicker(txt) { const k = $("resKicker"); if (k) k.textContent = tx
 function buildResults() {
   const f = resultsFoot(); if (f) f.style.display = "";
   setResKicker("Paso 4 de 4 · Resultados");
+  resultsBackTarget = "inicio";
   const result = computeResult();
-  saveLastResult(result);
+  if (!saveResult(result)) toast("No se pudo guardar la evaluación");
   renderResultsView(result);
 }
-// Abre los resultados guardados sin recalcular (consulta desde Inicio).
-// Si aún no hay ninguna evaluación, muestra un estado vacío que invita a hacerla.
-function openSavedResults() {
-  const saved = loadLastResult();
-  if (!saved || !saved.result) {
-    renderResultsEmpty();
-    go("resultados");
-    return;
-  }
+
+function openHistoryResult(id) {
+  const saved = loadHistory().find((x) => x.id === id);
+  if (!saved) { renderHistory(); return; }
   const f = resultsFoot(); if (f) f.style.display = "";
   setResKicker("Consulta · Resultados");
+  resultsBackTarget = "historial";
   renderResultsView(saved.result);
   go("resultados");
+}
+
+function updateHistorySelection() {
+  const count = selectedHistory.size;
+  const btn = $("deleteSelected");
+  if (btn) {
+    btn.disabled = count === 0;
+    btn.lastChild.textContent = count ? ` Eliminar seleccionadas (${count})` : " Eliminar seleccionadas";
+  }
+  const all = $("selectAllHistory");
+  const total = loadHistory().length;
+  if (all) {
+    all.checked = total > 0 && count === total;
+    all.indeterminate = count > 0 && count < total;
+  }
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  const foot = $("historyFoot");
+  selectedHistory.clear();
+  if (!history.length) {
+    if (foot) foot.style.display = "none";
+    $("historyBody").innerHTML = `
+      <div class="empty-res history-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <h3>Sin evaluaciones guardadas</h3>
+        <p>Las evaluaciones que completes aparecerán aquí para que puedas consultarlas o eliminarlas.</p>
+        <button class="cta" id="historyStartBtn">Realizar mi primera evaluación</button>
+      </div>`;
+    $("historyStartBtn").onclick = resetAll;
+    return;
+  }
+
+  if (foot) foot.style.display = "";
+  $("historyBody").innerHTML = `
+    <div class="history-toolbar">
+      <div><b>${history.length}</b> ${history.length === 1 ? "evaluación" : "evaluaciones"}</div>
+      <label class="history-select-all"><input type="checkbox" id="selectAllHistory"><span>Seleccionar todas</span></label>
+    </div>
+    <div class="history-list">
+      ${history.map((entry) => {
+        const result = entry.result;
+        const scope = engineScopeLabel(result.scopeType, result.scopeRef, BANK);
+        const total = Array.isArray(result.barriers) ? result.barriers.length : 0;
+        return `<article class="history-card" data-history-id="${esc(entry.id)}">
+          <label class="history-check" aria-label="Seleccionar evaluación del ${esc(formatResultDate(entry.ts))}">
+            <input type="checkbox" data-history-select="${esc(entry.id)}"><span>${IC.check}</span>
+          </label>
+          <button class="history-open" type="button" data-history-open="${esc(entry.id)}">
+            <span class="history-date">${esc(formatResultDate(entry.ts))}</span>
+            <strong>${esc(scope || "Valoración")}</strong>
+            <span class="history-summary">${total} ${total === 1 ? "barrera identificada" : "barreras identificadas"} · ${result.highCount || 0} de prioridad alta</span>
+          </button>
+          <svg class="history-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </article>`;
+      }).join("")}
+    </div>`;
+
+  $("historyBody").querySelectorAll("[data-history-open]").forEach((btn) => {
+    btn.onclick = () => openHistoryResult(btn.dataset.historyOpen);
+  });
+  $("historyBody").querySelectorAll("[data-history-select]").forEach((input) => {
+    input.onchange = () => {
+      if (input.checked) selectedHistory.add(input.dataset.historySelect);
+      else selectedHistory.delete(input.dataset.historySelect);
+      input.closest(".history-card")?.classList.toggle("selected", input.checked);
+      updateHistorySelection();
+    };
+  });
+  $("selectAllHistory").onchange = (e) => {
+    selectedHistory.clear();
+    $("historyBody").querySelectorAll("[data-history-select]").forEach((input) => {
+      input.checked = e.target.checked;
+      input.closest(".history-card")?.classList.toggle("selected", e.target.checked);
+      if (e.target.checked) selectedHistory.add(input.dataset.historySelect);
+    });
+    updateHistorySelection();
+  };
+  updateHistorySelection();
+}
+
+function openSavedResults() {
+  renderHistory();
+  go("historial");
 }
 // Estado vacío: sin evaluaciones todavía.
 function renderResultsEmpty() {
@@ -584,6 +694,7 @@ function renderResultsView(result) {
   lastResult = result;
   const rb = $("resBody");
   const total = result.barriers.length;
+  const resultScope = engineScopeLabel(result.scopeType, result.scopeRef, BANK);
   if (!total) {
     rb.innerHTML = `<div class="res-hero"><div class="k">Recorrido completo</div><div class="big">0</div><div class="sm">No se identificaron barreras candidatas con la información capturada.</div></div>
       <div class="disclaimer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><p>${esc(BANK.disclaimer)}</p></div>`;
@@ -594,7 +705,7 @@ function renderResultsView(result) {
       <div class="k">Barreras candidatas del contexto</div>
       <div class="big">${total}</div>
       <div class="sm">Barreras del entorno que el alumnado enfrenta. Se ubican en el contexto, nunca como una condición del estudiante.</div>
-      ${scopeLabel() ? `<div style="margin-top:13px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);padding:6px 12px;border-radius:9px;font-size:12px;font-weight:700"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>Valoración: ${esc(scopeLabel())}</div>` : ""}
+      ${resultScope ? `<div style="margin-top:13px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);padding:6px 12px;border-radius:9px;font-size:12px;font-weight:700"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/></svg>Valoración: ${esc(resultScope)}</div>` : ""}
       ${result.adaptedLabel ? `<div class="adapt-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6 4.3 2.3 7.3-6.3-4.6L5.7 21 8 14 2 9.4h7.6z"/></svg>Adaptado a: ${esc(result.adaptedLabel)}</div>` : ""}
     </div>
     <div class="res-stats">
@@ -665,6 +776,17 @@ function setupResultActions() {
   };
   $("printBtn").onclick = () => window.print();
   $("newBtn").onclick = resetAll;
+  $("deleteSelected").onclick = () => {
+    const count = selectedHistory.size;
+    if (!count) return;
+    const noun = count === 1 ? "esta evaluación" : `estas ${count} evaluaciones`;
+    if (!confirm(`¿Eliminar ${noun}? Esta acción no se puede deshacer.`)) return;
+    const next = loadHistory().filter((entry) => !selectedHistory.has(entry.id));
+    if (!writeHistory(next)) { toast("No se pudieron eliminar"); return; }
+    renderHistory();
+    refreshSavedResultsBtn();
+    toast(count === 1 ? "Evaluación eliminada" : "Evaluaciones eliminadas");
+  };
 }
 function fallbackCopy(txt) {
   const ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
@@ -774,7 +896,11 @@ function setupHome() {
   $("homeAbout").onclick = () => go("acerca");
   $("backFund").onclick = () => go("inicio");
   $("backAbout").onclick = () => go("inicio");
-  const br = $("backResults"); if (br) br.onclick = () => go("inicio");
+  $("backHistory").onclick = () => go("inicio");
+  const br = $("backResults"); if (br) br.onclick = () => {
+    if (resultsBackTarget === "historial") renderHistory();
+    go(resultsBackTarget);
+  };
   refreshSavedResultsBtn();
 }
 
@@ -902,6 +1028,7 @@ async function init() {
     return;
   }
   buildViewModels(BANK);
+  migrateLegacyResult();
   restore();
   setupScope();
   setupSemaforo();

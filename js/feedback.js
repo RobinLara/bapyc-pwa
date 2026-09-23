@@ -11,7 +11,7 @@
 // Independiente de app.js: se carga con su propio <script type="module">.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const APP_VERSION = "PWA 1.1";
+const APP_VERSION = "PWA 1.2";
 const ENDPOINT = "./api/feedback";
 const QUEUE_KEY = "bapyc.feedback.queue";
 const CATEGORIES = [
