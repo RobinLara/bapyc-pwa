@@ -467,7 +467,7 @@ function setupHelpSheet() {
 }
 
 // ── Evidencia (VIEW 3) ───────────────────────────────────────────────────────
-const presentBarriers = () => Object.values(state.answers).filter((a) => a.val === "yes");
+const presentBarriers = () => Object.entries(state.answers).filter(([, a]) => a.val === "yes");
 function buildEvidence() {
   const evList = $("evList"); evList.innerHTML = "";
   const yes = presentBarriers();
@@ -476,27 +476,44 @@ function buildEvidence() {
     d.innerHTML = '<div class="ev-q" style="text-align:center;color:var(--ink3)">No marcaste barreras como presentes. Puedes ir a resultados o regresar a explorar.</div>';
     evList.appendChild(d); return;
   }
-  yes.forEach((a) => {
+  yes.forEach(([answerKey, a]) => {
     const fam = FAM_BY_KEY[a.familyId];
     const card = document.createElement("div"); card.className = "ev-card";
+    card.dataset.answerKey = answerKey;
     const ctxTags = (a.ctx || []).map((c) => `<span class="tag ${c}">${esc(contextTag(c, BANK))}</span>`).join("");
-    const chips = (fam ? fam.ev : []).map((e) => `<span class="ev-chip" data-e="${esc(e)}">${esc(e)}</span>`).join("")
-      + '<span class="ev-chip ev-otro" data-e="__otro">+ Otro</span>';
+    const selected = new Set(a.evidenceChips || []);
+    const chips = (fam ? fam.ev : []).map((e) => `<span class="ev-chip${selected.has(e) ? " on" : ""}" data-e="${esc(e)}">${esc(e)}</span>`).join("")
+      + `<span class="ev-chip ev-otro${a.evidenceText ? " on" : ""}" data-e="__otro">+ Otro</span>`;
     card.innerHTML = `
       <div class="ev-q">${esc(a.q)}</div>
       <div class="ev-ctx">${ctxTags}</div>
       <div class="ev-lbl">Evidencia observable</div>
       <div class="ev-chips">${chips}</div>
-      <textarea class="ev-otro-txt" placeholder="Describe qué pasó…" style="display:none"></textarea>`;
+      <textarea class="ev-otro-txt" maxlength="240" placeholder="Describe qué pasó…" style="display:${a.evidenceText ? "block" : "none"}"></textarea>`;
+    card.querySelector(".ev-otro-txt").value = a.evidenceText || "";
     evList.appendChild(card);
   });
 }
 function setupEvidence() {
   $("evList").onclick = (e) => {
+    const card = e.target.closest(".ev-card");
+    const answer = card ? state.answers[card.dataset.answerKey] : null;
     const otro = e.target.closest(".ev-otro");
     if (otro) { otro.classList.toggle("on"); const tx = otro.closest(".ev-card").querySelector(".ev-otro-txt");
-      const on = otro.classList.contains("on"); tx.style.display = on ? "block" : "none"; if (on) tx.focus(); return; }
-    const chip = e.target.closest(".ev-chip"); if (chip) chip.classList.toggle("on");
+      const on = otro.classList.contains("on"); tx.style.display = on ? "block" : "none";
+      if (!on && answer) { answer.evidenceText = ""; tx.value = ""; }
+      if (on) tx.focus(); persist(); return; }
+    const chip = e.target.closest(".ev-chip");
+    if (chip && answer) {
+      chip.classList.toggle("on");
+      answer.evidenceChips = [...card.querySelectorAll(".ev-chip.on:not(.ev-otro)")].map((x) => x.dataset.e);
+      persist();
+    }
+  };
+  $("evList").oninput = (e) => {
+    const tx = e.target.closest(".ev-otro-txt"); if (!tx) return;
+    const card = tx.closest(".ev-card"), answer = state.answers[card.dataset.answerKey];
+    if (answer) { answer.evidenceText = tx.value.trim(); persist(); }
   };
   $("backSwipe").onclick = () => { go("swipe"); renderDeck(); };
   $("toResults").onclick = () => { buildResults(); go("resultados"); };
@@ -553,6 +570,7 @@ function computeResult() {
   const answers = Object.values(state.answers).map((a) => ({
     questionId: a.questionId, familyId: a.familyId, contexts: (a.ctx || []).join(","), value: a.val,
     text: a.q, strategy: a.strategy, freq: a.freq ?? null,
+    evidenceChips: a.evidenceChips || [], evidenceText: a.evidenceText || "",
   }));
   const customs = state.custom.map((c) => ({ familyId: c.famId, description: c.desc, contexts: (c.ctx || []).join(",") }));
   return evaluate({
@@ -719,44 +737,58 @@ function renderResultsView(result) {
       html += `
         <div class="bar-card review ${b.priority}">
           <div class="review-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 001.7 3h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg> Barrera añadida · para revisar con UDEI</div>
-          <div class="bar-top"><div class="bar-name">Se identifica una posible barrera ${esc(b.sing)}</div><span class="pri ${b.priority}">${esc(b.priority)}</span></div>
+          <div class="bar-top"><div class="bar-name">${esc(b.findingTitle || `Se identifica una posible barrera ${b.sing}`)}</div><span class="pri ${b.priority}">${esc(b.priority)}</span></div>
           ${b.contexts.length ? `<div class="bar-ctx">${ctxTagsHtml(b.contexts)}</div>` : ""}
           ${b.description ? `<div style="font-size:12.5px;color:var(--ink2);line-height:1.45;margin-top:6px">“${esc(b.description)}”</div>` : ""}
         </div>`;
       return;
     }
-    // Primero TODAS las barreras de la familia, luego TODAS las estrategias.
-    const barrerasHtml = b.items.map((it) => `
-      <div style="margin-top:10px">
-        <div style="font-size:13.5px;color:var(--ink);line-height:1.42;padding-left:15px;position:relative">
-          <span style="position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--risk)"></span>${esc(it.barrier)}
-        </div>
-        ${(it.contexts.length || it.freqLabel) ? `<div class="bar-ctx" style="margin:6px 0 0 15px">${ctxTagsHtml(it.contexts)}${it.freqLabel ? `<span class="freq-tag">${esc(it.freqLabel)}</span>` : ""}</div>` : ""}
-      </div>`).join("");
-    const estrategias = b.items.map((it) => it.strategy).filter(Boolean);
-    const estrategiasHtml = estrategias.map((s) => `
-      <div style="font-size:13px;color:var(--ink2);line-height:1.45;margin-top:9px;padding-left:15px;position:relative">
-        <span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--teal)"></span>${esc(s)}
-      </div>`).join("");
-    const nB = b.items.length, nS = estrategias.length;
     const blockLbl = (color, txt) => `<div style="font-size:10.5px;font-weight:800;color:${color};text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px">${txt}</div>`;
+    const itemsHtml = b.items.map((it) => `
+      <div class="result-item">
+        ${blockLbl("var(--risk)", "Hallazgo contextual")}
+        <div class="result-finding">${esc(it.barrier)}</div>
+        ${(it.contexts.length || it.freqLabel) ? `<div class="bar-ctx">${ctxTagsHtml(it.contexts)}${it.freqLabel ? `<span class="freq-tag">${esc(it.freqLabel)}</span>` : ""}</div>` : ""}
+        ${(it.evidence?.length || it.evidenceText) ? `<div class="result-evidence"><b>Evidencia registrada:</b> ${esc([...(it.evidence || []), it.evidenceText].filter(Boolean).join(" · "))}</div>` : ""}
+        ${it.strategy ? `<div class="result-action">${blockLbl("var(--teal)", "Acción sugerida")}<p>${esc(it.strategy)}</p></div>` : ""}
+        ${it.followUp ? `<div class="result-follow"><b>Seguimiento:</b> ${esc(it.followUp)}</div>` : ""}
+        ${it.route && it.route !== it.baseStrategy ? `<div class="result-route"><b>Ruta complementaria:</b> ${esc(it.route)}</div>` : ""}
+      </div>`).join("");
     html += `
       <div class="bar-card ${b.priority}">
-        <div class="bar-top"><div class="bar-name">Se identifica una posible barrera ${esc(b.sing)}</div><span class="pri ${b.priority}">${esc(b.priority)}</span></div>
+        <div class="bar-top"><div class="bar-name">${esc(b.findingTitle || `Se identifica una posible barrera ${b.sing}`)}</div><span class="pri ${b.priority}">${esc(b.priority)}</span></div>
         <div class="bar-ctx">${ctxTagsHtml(b.contexts)}${b.systemic ? '<span class="sys-tag">Sistémica</span>' : ""}</div>
-        <div style="border-top:1px solid var(--line);padding-top:11px;margin-top:11px">
-          ${blockLbl("var(--risk)", nB > 1 ? "Barreras" : "Barrera")}
-          ${barrerasHtml}
-        </div>
-        ${nS ? `<div style="border-top:1px solid var(--line);padding-top:11px;margin-top:12px">
-          ${blockLbl("var(--teal)", nS > 1 ? "Estrategias" : "Estrategia")}
-          ${estrategiasHtml}
-        </div>` : ""}
+        ${itemsHtml}
       </div>`;
   });
 
   html += `<div class="disclaimer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><p>${esc(BANK.disclaimer)}</p></div>`;
   rb.innerHTML = html;
+}
+
+// ── Desplazamiento asistido para pantallas de escritorio ────────────────────
+function setupDesktopScrollControls() {
+  const nav = $("scrollNav"), up = $("scrollUp"), down = $("scrollDown");
+  if (!nav || !up || !down) return;
+  const activeBody = () => document.querySelector(".view.active .body");
+  const update = () => {
+    const body = activeBody();
+    const canScroll = body && body.scrollHeight > body.clientHeight + 4;
+    nav.classList.toggle("available", !!canScroll);
+    up.disabled = !canScroll || body.scrollTop <= 2;
+    down.disabled = !canScroll || body.scrollTop + body.clientHeight >= body.scrollHeight - 2;
+  };
+  const move = (direction) => {
+    const body = activeBody(); if (!body) return;
+    body.scrollBy({ top: direction * Math.max(320, body.clientHeight * .78), behavior: "smooth" });
+  };
+  up.onclick = () => move(-1);
+  down.onclick = () => move(1);
+  document.querySelectorAll(".body").forEach((body) => body.addEventListener("scroll", update, { passive: true }));
+  window.addEventListener("resize", update);
+  const observer = new MutationObserver(update);
+  Object.values(views).forEach((view) => observer.observe(view, { attributes: true, attributeFilter: ["class"] }));
+  requestAnimationFrame(update);
 }
 
 function setupResultActions() {
@@ -1039,6 +1071,7 @@ async function init() {
   setupResultActions();
   setupHome();
   setupInstall();
+  setupDesktopScrollControls();
   renderFundamentos();
   updateScopeBadge();
   go("inicio");

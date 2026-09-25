@@ -36,7 +36,7 @@ function eq(name, got, exp) {
 }
 
 // Helper para armar una respuesta "sí".
-const yes = (questionId, familyId, contexts, freq) => ({ questionId, familyId, contexts, value: "yes", freq });
+const yes = (questionId, familyId, contexts, freq, extra = {}) => ({ questionId, familyId, contexts, value: "yes", freq, ...extra });
 const evalWith = (answers, opts = {}) =>
   evaluate({ answers, customs: opts.customs ?? [], semaphores: opts.semaphores ?? {}, bank,
     scopeType: opts.scopeType ?? "alumno", scopeRef: opts.scopeRef ?? "", scopeCond: opts.scopeCond ?? null });
@@ -126,7 +126,22 @@ ok("reporte incluye 'REPORTE BAPyC'", rep.includes("REPORTE BAPyC"));
 ok("reporte incluye frecuencia [Casi siempre]", rep.includes("[Casi siempre]"));
 ok("reporte incluye disclaimer no-diagnóstico", /no diagnostica/i.test(rep));
 
-// ── 8. Reporte vacío ─────────────────────────────────────────────────────────
+// ── 8. Estrategia diferenciada por alcance, contexto y evidencia ─────────────
+const ansWithEvidence = yes("ped-01", "ped", "aulico", "medio", {
+  evidenceChips: ["Reporte docente"], evidenceText: "Participación limitada durante el trabajo escrito",
+});
+const individual = evalWith([ansWithEvidence], { scopeType: "alumno" });
+const group = evalWith([ansWithEvidence], { scopeType: "grupo" });
+const individualItem = individual.barriers[0].items[0];
+const groupItem = group.barriers[0].items[0];
+ok("acción individual se identifica como tal", /valoración individual/i.test(individualItem.strategy));
+ok("acción de grupo usa redacción distinta", /para el grupo/i.test(groupItem.strategy));
+ok("acciones cambian según alcance", individualItem.strategy !== groupItem.strategy);
+ok("seguimiento se adapta al contexto áulico", /planeación de aula/i.test(groupItem.followUp));
+eq("evidencia estructurada llega al resultado", groupItem.evidence[0], "Reporte docente");
+ok("reporte incorpora observación", buildReport(group, bank).includes("Participación limitada"));
+
+// ── 9. Reporte vacío ─────────────────────────────────────────────────────────
 const repEmpty = buildReport(evalWith([]), bank);
 ok("reporte vacío es coherente", /Sin barreras candidatas/.test(repEmpty));
 

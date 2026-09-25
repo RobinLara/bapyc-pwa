@@ -155,6 +155,51 @@ function orderContexts(ctx, bank) {
   });
 }
 
+const lowerFirst = (text) => text ? text.charAt(0).toLocaleLowerCase("es-MX") + text.slice(1) : "";
+
+function normalizeEvidence(ans) {
+  const chips = Array.isArray(ans.evidenceChips)
+    ? ans.evidenceChips
+    : String(ans.evidenceChips ?? "").split("|");
+  return [...new Set(chips.map((x) => x.trim()).filter(Boolean))];
+}
+
+function personalizedStrategy(base, { scopeType, contexts, freq }) {
+  if (!base || !base.trim()) return "";
+  const clean = base.trim().replace(/[.]+$/, "");
+  const lead = {
+    alumno: "Para esta valoración individual",
+    grupo: "Para el grupo",
+    escuela: "Como acuerdo de escuela",
+  }[scopeType] ?? "Para esta valoración";
+
+  const contextStep = contexts.length > 1
+    ? `Coordinar su aplicación entre ${contexts.length} contextos y registrar un acuerdo común.`
+    : {
+        escolar: "Definir responsable y seguimiento con el colectivo escolar.",
+        aulico: "Integrarla en la planeación de aula y observar su efecto en la participación.",
+        sociofamiliar: "Acordarla con la familia y mantener una comunicación accesible.",
+      }[contexts[0]] ?? "Acordar quién la implementará y cómo se dará seguimiento.";
+
+  const reviewStep = {
+    poco: "Probarla durante dos semanas y documentar si la barrera disminuye.",
+    medio: "Aplicarla de forma sistemática durante dos semanas y revisar avances.",
+    mucho: "Iniciarla de inmediato y revisar avances semanalmente.",
+  }[freq] ?? "Definir un periodo de aplicación y revisar los avances observados.";
+
+  return {
+    action: `${lead}, ${lowerFirst(clean)}.`,
+    followUp: `${contextStep} ${reviewStep}`,
+  };
+}
+
+function findingTitle(sing, priority, systemic) {
+  if (systemic) return `Se observa una barrera ${sing} que atraviesa varios contextos`;
+  if (priority === "alta") return `La evidencia muestra una barrera ${sing} que requiere atención prioritaria`;
+  if (priority === "baja") return `Se reconoce una señal inicial de barrera ${sing}`;
+  return `La información recabada sugiere revisar una barrera ${sing}`;
+}
+
 /**
  * Etiqueta corta de un contexto (Escolar / Áulico / Familiar).
  */
@@ -257,18 +302,30 @@ export function evaluate({
       const fam = bank.family(familyId);
       const deckQs = bank.deckQuestions(familyId, scopeCond);
 
+      const familyRoutes = routesFor(familyId, fam);
       const seenBarrier = new Set();
       const barrierItems = items
-        .map((ans) => {
+        .map((ans, itemIndex) => {
           const q = deckQs.find((qq) => qq.id === ans.questionId);
+          const itemContexts = orderContexts(splitCsv(ans.contexts), bank);
+          const tailored = personalizedStrategy(q?.strategy ?? ans.strategy ?? "", {
+            scopeType,
+            contexts: itemContexts,
+            freq: ans.freq,
+          });
           return {
             // Texto/estrategia: la pregunta encontrada; si no, el texto que trae la
             // propia respuesta (robusto); en último caso, el id (nunca debería verse).
             barrier: q?.text ?? ans.text ?? ans.questionId,
-            strategy: q?.strategy ?? ans.strategy ?? "",
-            contexts: orderContexts(splitCsv(ans.contexts), bank),
+            strategy: tailored.action ?? "",
+            baseStrategy: q?.strategy ?? ans.strategy ?? "",
+            followUp: tailored.followUp ?? "",
+            route: familyRoutes.length ? familyRoutes[itemIndex % familyRoutes.length] : "",
+            contexts: itemContexts,
             freq: ans.freq ?? null,
             freqLabel: ans.freq ? bank.freqLabel(ans.freq) : "",
+            evidence: normalizeEvidence(ans),
+            evidenceText: String(ans.evidenceText ?? "").trim(),
           };
         })
         .filter((bi) => {
@@ -286,7 +343,8 @@ export function evaluate({
         impact,
         systemic,
         priority,
-        routes: routesFor(familyId, fam),
+        findingTitle: findingTitle(fam?.sing ?? familyId, priority, systemic),
+        routes: familyRoutes,
         items: barrierItems,
         custom: false,
         description: null,
@@ -306,6 +364,7 @@ export function evaluate({
       yesCount: 1,
       systemic,
       priority: systemic ? "alta" : "media",
+      findingTitle: findingTitle(fam?.sing ?? "sin clasificar", systemic ? "alta" : "media", systemic),
       routes: c.familyId ? routesFor(c.familyId, fam) : [],
       items: [],
       custom: true,
@@ -373,7 +432,7 @@ export function buildReport(result, bank) {
   result.barriers.forEach((b, i) => {
     lines.push("");
     const sysTag = b.systemic ? " · SISTÉMICA" : "";
-    lines.push(`${i + 1}. Barrera ${b.sing}  [${b.priority.toUpperCase()}${sysTag}]`);
+    lines.push(`${i + 1}. ${b.findingTitle ?? `Barrera ${b.sing}`}  [${b.priority.toUpperCase()}${sysTag}]`);
     if (b.custom) {
       if (b.contexts.length > 0)
         lines.push(`   Contextos: ${b.contexts.map((c) => contextTag(c, bank)).join(", ")}`);
@@ -385,8 +444,12 @@ export function buildReport(result, bank) {
           ? ` (${it.contexts.map((c) => contextTag(c, bank)).join(", ")})`
           : "";
         const fq = it.freqLabel ? ` [${it.freqLabel}]` : "";
-        lines.push(`   • Barrera: ${it.barrier}${ctx}${fq}`);
-        if (it.strategy.trim() !== "") lines.push(`     Estrategia: ${it.strategy}`);
+        lines.push(`   • Hallazgo: ${it.barrier}${ctx}${fq}`);
+        if (it.evidence?.length) lines.push(`     Evidencia: ${it.evidence.join(", ")}`);
+        if (it.evidenceText) lines.push(`     Observación: ${it.evidenceText}`);
+        if (it.strategy.trim() !== "") lines.push(`     Acción sugerida: ${it.strategy}`);
+        if (it.followUp) lines.push(`     Seguimiento: ${it.followUp}`);
+        if (it.route && it.route !== it.baseStrategy) lines.push(`     Ruta complementaria: ${it.route}`);
       });
     }
   });
